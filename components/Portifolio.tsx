@@ -4,7 +4,7 @@ import Headers from "@/components/Header";
 import Avatar from "@/components/Avatar";
 import Introduction from "@/components/Introduction";
 import ExperiencesWith from "@/components/ExperiencesWith";
-import Projects from "@/components/Projects/index";
+// import Projects from "@/components/Projects/index";
 import Experiences from "@/components/Experiences/index";
 
 const Portifolio = () => {
@@ -20,7 +20,7 @@ const Portifolio = () => {
 
           <ExperiencesWith />
 
-          <Projects />
+          {/* <Projects /> */}
 
           <Experiences />
         </div>

@@ -1,7 +1,7 @@
 const Introduction = () => {
   return (
     <>
-      <div className="text-5xl mx-auto text-white text-center space-y-1.5">
+      {/* <div className="text-5xl mx-auto text-white text-center space-y-1.5">
         <p>I do code and</p>
         <p>
           make content{" "}
@@ -9,13 +9,19 @@ const Introduction = () => {
             about it!
           </span>
         </p>
-      </div>
+      </div> */}
 
-      <div className="max-w-2xl mx-auto text-secondary text-lg text-center">
-        I am a seasoned full-stack software engineer with over 8 years of
-        professional experience, specializing in backend development. My
-        expertise lies in crafting robust and scalable SaaS-based architectures
-        on the Amazon AWS platform.
+      <div className="max-w-2xl mx-auto text-secondary text-lg text-center space-y-2">
+        <p>
+          I am a Frontend Developer passionate about building and optimizing web
+          interfaces. With a logical mindset and creativity, I always seek ways
+          to enhance user experience through intuitive design, high performance,
+          and clean code.
+        </p>
+        <p>
+          I am always looking for opportunities to grow and contribute to
+          innovative projects that bring real value to users.
+        </p>
       </div>
 
       <div className="mx-auto space-x-[18px]">

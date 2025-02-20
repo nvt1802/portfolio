@@ -10,7 +10,14 @@ const Experiences = () => {
 
       <div className="flex flex-row gap-8 mx-auto mt-8">
         {experienceIcons?.map((item, index) => (
-          <Image key={index} src={item?.icon} alt="" width={42} height={42} />
+          <Image
+            key={index}
+            src={item?.icon}
+            alt=""
+            width={42}
+            height={42}
+            title={item?.name}
+          />
         ))}
       </div>
     </>

@@ -5,6 +5,7 @@ export interface IPath {
 
 export interface IExperience {
   icon: string;
+  name: string;
 }
 
 export interface IProject {
@@ -13,7 +14,7 @@ export interface IProject {
 }
 
 export interface IProjectExperience {
-  icon: string;
+  icon?: string;
   projectName: string;
   date: string;
   description: string;
