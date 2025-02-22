@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Nguyen Van Tai - Portfolio",
   description: "Nguyen Van Tai - Portfolio",
+  icons: "/logo.png"
 };
 
 export default function RootLayout({
