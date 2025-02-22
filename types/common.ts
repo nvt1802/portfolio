@@ -15,7 +15,7 @@ export interface IProject {
 
 export interface IProjectExperience {
   icon?: string;
-  projectName: string;
+  name: string;
   date: string;
   description: string;
 }

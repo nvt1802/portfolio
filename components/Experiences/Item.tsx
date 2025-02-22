@@ -13,7 +13,7 @@ const Item: React.FC<IProps> = ({ data }) => {
             {data?.icon && (
               <Image src={data?.icon} alt="" width={28} height={28} />
             )}
-            <p className="text-white text-xl">{data?.projectName}</p>
+            <p className="text-white text-xl">{data?.name}</p>
           </div>
           <p className="text-regent-gray text-sm">{data?.date}</p>
         </div>

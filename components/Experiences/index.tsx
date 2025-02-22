@@ -4,7 +4,7 @@ import { projectExperiences } from "@/utils/constants/common";
 const Experiences = () => {
   return (
     <>
-      <div className="mx-auto mt-8">
+      <div id="experience" className="mx-auto mt-8">
         <p className="text-4xl bg-gradient-to-t from-denim from-20% via-malibu via-100% text-transparent bg-clip-text text-center">
           Experience
         </p>

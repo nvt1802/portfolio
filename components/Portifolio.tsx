@@ -6,14 +6,15 @@ import Introduction from "@/components/Introduction";
 import ExperiencesWith from "@/components/ExperiencesWith";
 // import Projects from "@/components/Projects/index";
 import Experiences from "@/components/Experiences/index";
+import Footer from "@/components/Footer";
 
 const Portifolio = () => {
   return (
     <>
-      <div className="h-full w-full bg-cod-gray pb-5">
+      <div className="h-full w-full bg-cod-gray flex flex-col gap-20">
         <Headers />
 
-        <div className="flex mt-24 flex-col gap-8">
+        <div className="flex flex-col gap-8">
           <Avatar />
 
           <Introduction />
@@ -24,6 +25,8 @@ const Portifolio = () => {
 
           <Experiences />
         </div>
+
+        <Footer />
       </div>
     </>
   );

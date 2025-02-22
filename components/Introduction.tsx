@@ -28,9 +28,13 @@ const Introduction = () => {
         <button className="bg-white border-2 py-4 px-[30px] rounded-[50px] font-semibold text-cod-gray">
           Get In Touch
         </button>
-        <button className="border-2 border-white text-white py-4 px-[30px] rounded-[50px] font-semibold ">
+        <a
+          href="/files/nvt-cv.pdf"
+          download="nvt-cv.pdf"
+          className="border-2 border-white text-white py-4 px-[30px] rounded-[50px] font-semibold "
+        >
           Download CV
-        </button>
+        </a>
       </div>
     </>
   );

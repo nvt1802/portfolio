@@ -8,19 +8,19 @@ import {
 export const navLinks: IPath[] = [
   {
     name: "Home",
-    path: "",
+    path: "#home",
   },
-  {
-    name: "Projects",
-    path: "",
-  },
+  // {
+  //   name: "Projects",
+  //   path: "",
+  // },
   {
     name: "Experience",
-    path: "",
+    path: "#experience",
   },
   {
     name: "Contact",
-    path: "",
+    path: "#contact",
   },
 ];
 
@@ -73,24 +73,17 @@ export const projects: IProject[] = [
 
 export const projectExperiences: IProjectExperience[] = [
   {
-    date: "Nov 2019 - Present",
+    date: "Nov 2022 - Present",
     description:
-      "As a Senior Software Engineer at Google, I played a pivotal role in developing innovative solutions for Google's core search algorithms. Collaborating with a dynamic team of engineers, I contributed to the enhancement of search accuracy and efficiency, optimizing user experiences for millions of users worldwide.",
+      "I contribute to the development of CRM, CMS, and e-commerce systems using Vue.js, Nuxt.js, Astro, and Svelte. Collaborating closely with backend teams, I optimize API performance, enhance UI/UX, and improve website efficiency. My work focuses on optimizing Lighthouse performance to ensure fast-loading, SEO-friendly web applications.",
     // icon: "/icons/google-logo.svg",
-    projectName: "Lead Software Engineer at Google",
+    name: "Frontend Developer at MGI Solutions",
   },
   {
-    date: "Jan 2016 - Dec 2017",
+    date: "Apr 2019 - JUL 2022",
     description:
-      "During my tenure at Apple, I held the role of Software Architect, where I played a key role in shaping the architecture of mission-critical software projects. Responsible for designing scalable and efficient systems, I provided technical leadership to a cross-functional team.",
+      "As part of an international software development team, I participated in building online education platforms, debt collection management systems, and simulation tools. I was responsible for developing user interfaces with React.js and Vue.js, ensuring a seamless user experience across multiple platforms.",
     // icon: "/icons/apple-logo.svg",
-    projectName: "Junior Software Engineer at Apple",
-  },
-  {
-    date: "Jan 2017 - Oct 2019",
-    description:
-      "At Meta, I served as a  Software Engineer, focusing on the design and implementation of backend systems for the social media giant's dynamic platform. Working on projects that involved large-scale data processing and user engagement features, I leveraged my expertise to ensure seamless functionality and scalability.",
-    // icon: "/icons/meta-logo.svg",
-    projectName: "Software Engineer at Meta",
+    name: "Frontend Developer at FPT Software",
   },
 ];
