@@ -11,7 +11,7 @@ const Introduction = () => {
         </p>
       </div> */}
 
-      <div className="max-w-2xl mx-auto text-secondary text-lg text-center space-y-2">
+      <div className="max-w-2xl mx-auto text-secondary text-base sm:text-lg text-center space-y-2">
         <p>
           I am a Frontend Developer passionate about building and optimizing web
           interfaces. With a logical mindset and creativity, I always seek ways
@@ -24,14 +24,14 @@ const Introduction = () => {
         </p>
       </div>
 
-      <div className="mx-auto space-x-[18px]">
-        <button className="bg-white border-2 py-4 px-[30px] rounded-[50px] font-semibold text-cod-gray">
+      <div className="mx-auto flex flex-row gap-5 flex-wrap justify-center w-full">
+        <button className="bg-white border-2 py-2.5 sm:py-4 text-sm leading-5 sm:text-base px-6 sm:px-[30px] rounded-[50px] font-semibold text-cod-gray">
           Get In Touch
         </button>
         <a
           href="/files/nvt-cv.pdf"
           download="nvt-cv.pdf"
-          className="border-2 border-white text-white py-4 px-[30px] rounded-[50px] font-semibold "
+          className="border-2 border-white text-white py-2.5 sm:py-4 px-[30px] rounded-[50px] font-semibold text-sm sm:text-base leading-5"
         >
           Download CV
         </a>

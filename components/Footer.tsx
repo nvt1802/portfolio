@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#191919] h-60 w-full flex">
+    <footer className="bg-[#191919] min-h-60 w-full flex px-4 py-6">
       <div id="contact" className="max-w-3xl m-auto text-white">
         <p className="text-2xl">Contact</p>
         <p className="text-secondary text-sm mt-10">

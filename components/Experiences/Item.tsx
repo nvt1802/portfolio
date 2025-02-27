@@ -13,11 +13,11 @@ const Item: React.FC<IProps> = ({ data }) => {
             {data?.icon && (
               <Image src={data?.icon} alt="" width={28} height={28} />
             )}
-            <p className="text-white text-xl">{data?.name}</p>
+            <p className="text-white text-base sm:text-xl">{data?.name}</p>
           </div>
-          <p className="text-regent-gray text-sm">{data?.date}</p>
+          <p className="text-regent-gray text-sm whitespace-nowrap">{data?.date}</p>
         </div>
-        <p className="text-base font-normal text-regent-gray">
+        <p className="text-sm sm:text-base font-normal text-regent-gray">
           {data?.description}
         </p>
       </div>

@@ -11,10 +11,10 @@ import Footer from "@/components/Footer";
 const Portifolio = () => {
   return (
     <>
-      <div className="h-full w-full bg-cod-gray flex flex-col gap-20">
+      <div className="h-full w-full bg-cod-gray flex flex-col gap-12 sm:gap-20">
         <Headers />
 
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-8 mx-4">
           <Avatar />
 
           <Introduction />

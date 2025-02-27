@@ -8,7 +8,7 @@ const Experiences = () => {
         <p className="text-secondary font-semibold text-xl">EXPERIENCE WITH</p>
       </div>
 
-      <div className="flex flex-row gap-8 mx-auto mt-8">
+      <div className="flex flex-row gap-8 mx-auto mt-8 justify-center flex-wrap">
         {experienceIcons?.map((item, index) => (
           <Image
             key={index}
