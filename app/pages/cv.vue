@@ -85,6 +85,27 @@ const filteredSkills = computed(() => {
     .sort((a, b) => (a.order || 0) - (b.order || 0))
 })
 
+const groupedSkills = computed(() => {
+  const groups: Record<string, any[]> = {}
+  
+  const categoryNames: Record<string, string> = {
+    'frontend': 'Frontend',
+    'backend': 'Backend',
+    'tools': 'Tools',
+    'ai-automation': 'AI Agent & Automation'
+  }
+  
+  filteredSkills.value.forEach(skill => {
+    const groupName = categoryNames[skill.category] || skill.category
+    if (!groups[groupName]) {
+      groups[groupName] = []
+    }
+    groups[groupName].push(skill)
+  })
+  
+  return groups
+})
+
 const printCv = () => {
   window.print()
 }
@@ -186,11 +207,28 @@ const printCv = () => {
 
         <!-- Skills Section -->
         <section v-if="filteredSkills.length > 0" class="cv-section">
-          <h3 class="section-title">Professional Skills</h3>
-          <div class="section-content skills-grid">
-            <div v-for="skill in filteredSkills" :key="skill.id" class="skill-item">
-              <span class="skill-name">{{ skill.name }}</span>
-            </div>
+          <h3 class="section-title">SKILL</h3>
+          <div class="section-content">
+            <table class="cv-skills-table" style="width: 100%; border-collapse: collapse;">
+              <tbody>
+                <tr v-for="(categorySkills, categoryName) in groupedSkills" :key="categoryName" style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                  <td style="width: 25%; padding: 12px 0; vertical-align: top; font-weight: 700; color: var(--cv-primary);">
+                    {{ categoryName }}
+                  </td>
+                  <td style="width: 75%; padding: 12px 0; vertical-align: top; color: var(--cv-text);">
+                    <!-- Icon Skills (comma separated) -->
+                    <div v-if="categorySkills.filter(s => s.displayType !== 'text').length > 0" style="margin-bottom: 4px;">
+                      {{ categorySkills.filter(s => s.displayType !== 'text').map(s => s.name).join(', ') }}
+                    </div>
+                    
+                    <!-- Text Skills (bullet points) -->
+                    <div v-for="skill in categorySkills.filter(s => s.displayType === 'text')" :key="skill.id" style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; margin-top: 4px;">
+                      {{ skill.description }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 

@@ -19,9 +19,10 @@ const toastMessage = ref('')
 const skillForm = ref({
   name: '',
   category: 'frontend' as 'frontend' | 'backend' | 'tools' | 'ai-automation',
+  displayType: 'icon' as 'icon' | 'text',
   order: 0,
-  level: '',
-  iconUrl: ''
+  iconUrl: '',
+  description: ''
 })
 
 const showToast = (msg: string) => {
@@ -37,9 +38,10 @@ const saveSkill = async () => {
     const dataToSave = {
       name: skillForm.value.name,
       category: skillForm.value.category,
+      displayType: skillForm.value.displayType,
       order: skillForm.value.order,
-      level: skillForm.value.level,
-      iconUrl: skillForm.value.iconUrl
+      iconUrl: skillForm.value.displayType === 'icon' ? skillForm.value.iconUrl : '',
+      description: skillForm.value.displayType === 'text' ? skillForm.value.description : ''
     }
 
     await addDoc(collection(db, 'skills'), dataToSave)
@@ -86,11 +88,22 @@ const saveSkill = async () => {
             <option value="ai-automation">AI Agent & Automation</option>
           </select>
         </div>
+        
         <div class="form-group" style="margin-bottom: 20px;">
-          <label class="form-label">Cấp độ kỹ năng (Ví dụ: Lead, Senior, Junior)</label>
-          <input v-model="skillForm.level" type="text" class="form-control" placeholder="Ví dụ: Senior, Lead, 3 năm kinh nghiệm..." required />
+          <label class="form-label">Kiểu hiển thị</label>
+          <div style="display: flex; gap: 16px; margin-top: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-primary);">
+              <input type="radio" v-model="skillForm.displayType" value="icon" style="accent-color: var(--accent);" />
+              Biểu tượng (Icon)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-primary);">
+              <input type="radio" v-model="skillForm.displayType" value="text" style="accent-color: var(--accent);" />
+              Văn bản (Text)
+            </label>
+          </div>
         </div>
-        <div class="form-group" style="margin-bottom: 20px;">
+
+        <div v-if="skillForm.displayType === 'icon'" class="form-group" style="margin-bottom: 20px;">
           <label class="form-label">Đường dẫn Logo / Icon Công nghệ (URL hoặc local path)</label>
           <input v-model="skillForm.iconUrl" type="text" class="form-control" placeholder="Ví dụ: /images/skills/vue.png hoặc https://..." />
           <div v-if="skillForm.iconUrl" style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: var(--radius-sm); display: inline-flex; flex-direction: column; gap: 8px;">
@@ -100,6 +113,12 @@ const saveSkill = async () => {
             </div>
           </div>
         </div>
+
+        <div v-if="skillForm.displayType === 'text'" class="form-group" style="margin-bottom: 20px;">
+          <label class="form-label">Mô tả chi tiết (Hỗ trợ xuống dòng)</label>
+          <textarea v-model="skillForm.description" class="form-control" rows="5" placeholder="Ví dụ:&#10;- Web Workers, Code Splitting&#10;- Lighthouse optimization"></textarea>
+        </div>
+        
         <div class="form-group" style="margin-bottom: 24px;">
           <label class="form-label">Thứ tự ưu tiên hiển thị (Số nhỏ đứng trước)</label>
           <input v-model.number="skillForm.order" type="number" class="form-control" required />

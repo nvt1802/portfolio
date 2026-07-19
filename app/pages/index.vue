@@ -11,10 +11,10 @@ interface Skill {
   id: string
   name: string
   category: 'frontend' | 'backend' | 'tools' | 'ai-automation'
-  level?: string
+  displayType?: 'icon' | 'text'
   order: number
   iconUrl?: string
-  iconPath?: string
+  description?: string
 }
 
 const db = useFirestore()
@@ -211,14 +211,18 @@ const scrollToSection = (id: string) => {
           <!-- Category: Frontend -->
           <div class="skills-category-container">
             <h3 class="skills-category-title">Frontend Development</h3>
-            <div class="skills-circles-grid">
-              <div v-for="skill in frontendSkills" :key="skill.id" class="skill-circle-item">
+            <div class="skills-circles-grid" v-if="frontendSkills.filter(s => s.displayType !== 'text').length > 0">
+              <div v-for="skill in frontendSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="skill-circle-item">
                 <div class="skill-circle-wrapper">
                   <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="skill-circle-img" />
                   <span v-else class="skill-circle-placeholder">{{ skill.name.charAt(0) }}</span>
                 </div>
                 <div class="skill-circle-name">{{ skill.name }}</div>
-                <div class="skill-circle-level">{{ skill.level || 'N/A' }}</div>
+              </div>
+            </div>
+            <div class="skills-text-list" v-if="frontendSkills.filter(s => s.displayType === 'text').length > 0" style="margin-top: 24px; display: flex; flex-direction: column; gap: 16px; text-align: left; padding: 0 16px;">
+              <div v-for="skill in frontendSkills.filter(s => s.displayType === 'text')" :key="skill.id" class="skill-text-item">
+                <div class="skill-text-desc" style="white-space: pre-wrap; font-size: 14px; color: var(--text-secondary); line-height: 1.6;">{{ skill.description }}</div>
               </div>
             </div>
             <div v-if="frontendSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Updating...</div>
@@ -227,14 +231,18 @@ const scrollToSection = (id: string) => {
           <!-- Category: Backend -->
           <div class="skills-category-container">
             <h3 class="skills-category-title">Backend Development</h3>
-            <div class="skills-circles-grid">
-              <div v-for="skill in backendSkills" :key="skill.id" class="skill-circle-item">
+            <div class="skills-circles-grid" v-if="backendSkills.filter(s => s.displayType !== 'text').length > 0">
+              <div v-for="skill in backendSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="skill-circle-item">
                 <div class="skill-circle-wrapper">
                   <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="skill-circle-img" />
                   <span v-else class="skill-circle-placeholder">{{ skill.name.charAt(0) }}</span>
                 </div>
                 <div class="skill-circle-name">{{ skill.name }}</div>
-                <div class="skill-circle-level">{{ skill.level || 'N/A' }}</div>
+              </div>
+            </div>
+            <div class="skills-text-list" v-if="backendSkills.filter(s => s.displayType === 'text').length > 0" style="margin-top: 24px; display: flex; flex-direction: column; gap: 16px; text-align: left; padding: 0 16px;">
+              <div v-for="skill in backendSkills.filter(s => s.displayType === 'text')" :key="skill.id" class="skill-text-item">
+                <div class="skill-text-desc" style="white-space: pre-wrap; font-size: 14px; color: var(--text-secondary); line-height: 1.6;">{{ skill.description }}</div>
               </div>
             </div>
             <div v-if="backendSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Updating...</div>
@@ -243,14 +251,18 @@ const scrollToSection = (id: string) => {
           <!-- Category: AI & Automation -->
           <div class="skills-category-container">
             <h3 class="skills-category-title">AI & Automation</h3>
-            <div class="skills-circles-grid">
-              <div v-for="skill in aiSkills" :key="skill.id" class="skill-circle-item">
+            <div class="skills-circles-grid" v-if="aiSkills.filter(s => s.displayType !== 'text').length > 0">
+              <div v-for="skill in aiSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="skill-circle-item">
                 <div class="skill-circle-wrapper">
                   <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="skill-circle-img" />
                   <span v-else class="skill-circle-placeholder">{{ skill.name.charAt(0) }}</span>
                 </div>
                 <div class="skill-circle-name">{{ skill.name }}</div>
-                <div class="skill-circle-level">{{ skill.level || 'N/A' }}</div>
+              </div>
+            </div>
+            <div class="skills-text-list" v-if="aiSkills.filter(s => s.displayType === 'text').length > 0" style="margin-top: 24px; display: flex; flex-direction: column; gap: 16px; text-align: left; padding: 0 16px;">
+              <div v-for="skill in aiSkills.filter(s => s.displayType === 'text')" :key="skill.id" class="skill-text-item">
+                <div class="skill-text-desc" style="white-space: pre-wrap; font-size: 14px; color: var(--text-secondary); line-height: 1.6;">{{ skill.description }}</div>
               </div>
             </div>
             <div v-if="aiSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Updating...</div>
@@ -259,14 +271,18 @@ const scrollToSection = (id: string) => {
           <!-- Category: Tools & DevOps -->
           <div class="skills-category-container">
             <h3 class="skills-category-title">Tools & DevOps</h3>
-            <div class="skills-circles-grid">
-              <div v-for="skill in toolsSkills" :key="skill.id" class="skill-circle-item">
+            <div class="skills-circles-grid" v-if="toolsSkills.filter(s => s.displayType !== 'text').length > 0">
+              <div v-for="skill in toolsSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="skill-circle-item">
                 <div class="skill-circle-wrapper">
                   <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="skill-circle-img" />
                   <span v-else class="skill-circle-placeholder">{{ skill.name.charAt(0) }}</span>
                 </div>
                 <div class="skill-circle-name">{{ skill.name }}</div>
-                <div class="skill-circle-level">{{ skill.level || 'N/A' }}</div>
+              </div>
+            </div>
+            <div class="skills-text-list" v-if="toolsSkills.filter(s => s.displayType === 'text').length > 0" style="margin-top: 24px; display: flex; flex-direction: column; gap: 16px; text-align: left; padding: 0 16px;">
+              <div v-for="skill in toolsSkills.filter(s => s.displayType === 'text')" :key="skill.id" class="skill-text-item">
+                <div class="skill-text-desc" style="white-space: pre-wrap; font-size: 14px; color: var(--text-secondary); line-height: 1.6;">{{ skill.description }}</div>
               </div>
             </div>
             <div v-if="toolsSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Updating...</div>

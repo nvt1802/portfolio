@@ -141,9 +141,10 @@ interface Skill {
   id: string
   name: string
   category: 'frontend' | 'backend' | 'tools' | 'ai-automation'
+  displayType?: 'icon' | 'text'
   order: number
-  level?: string
   iconUrl?: string
+  description?: string
 }
 
 const skills = useCollection<Skill>(computed(() => {
@@ -491,7 +492,7 @@ const savePersonalInfo = async () => {
                 <th>Icon</th>
                 <th>Tên kỹ năng</th>
                 <th>Phân mục</th>
-                <th>Cấp độ</th>
+                <th>Loại hiển thị</th>
                 <th>Thứ tự</th>
                 <th>Hành động</th>
               </tr>
@@ -499,10 +500,11 @@ const savePersonalInfo = async () => {
             <tbody>
               <tr v-for="skill in skills" :key="skill.id">
                 <td style="width: 80px;">
-                  <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; padding: 6px; border: 1px solid var(--border-color); overflow: hidden;">
+                  <div v-if="skill.displayType !== 'text'" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; padding: 6px; border: 1px solid var(--border-color); overflow: hidden;">
                     <img v-if="skill.iconUrl" :src="skill.iconUrl" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
                     <span v-else style="color: var(--primary); font-weight: 800; font-size: 14px;">{{ skill.name.charAt(0) }}</span>
                   </div>
+                  <div v-else style="color: var(--text-secondary); font-size: 12px; font-style: italic;">Văn bản</div>
                 </td>
                 <td style="font-weight:600;">{{ skill.name }}</td>
                 <td>
@@ -510,7 +512,11 @@ const savePersonalInfo = async () => {
                     {{ categoriesMap[skill.category] }}
                   </span>
                 </td>
-                <td style="color: var(--accent); font-weight: 600; font-size: 14px;">{{ skill.level || 'N/A' }}</td>
+                <td>
+                  <span class="badge" :class="skill.displayType === 'text' ? 'badge-accent' : 'badge-primary'">
+                    {{ skill.displayType === 'text' ? 'Văn bản' : 'Icon' }}
+                  </span>
+                </td>
                 <td>{{ skill.order }}</td>
                 <td class="actions-cell">
                   <div class="actions-wrapper">
