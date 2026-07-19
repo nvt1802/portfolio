@@ -100,7 +100,7 @@ defineProps<{
             <div class="text-[14px] text-[color:var(--cv-text)] leading-[1.6] [&>ul]:my-1.5 [&>ul]:pl-5 [&>ul>li]:mb-1" v-html="proj.description"></div>
             
             <div v-if="proj.workDone" class="text-[14px] text-[color:var(--cv-text)] leading-[1.6] mt-2 [&>ul]:my-1.5 [&>ul]:pl-5 [&>ul>li]:mb-1">
-              <strong class="text-[color:var(--cv-primary)] block mb-1">Responsibilities & Achievements:</strong>
+              <strong class="text-[color:var(--cv-primary)] block mb-1">Responsibilities:</strong>
               <div v-html="proj.workDone"></div>
             </div>
           </div>

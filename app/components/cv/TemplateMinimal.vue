@@ -81,7 +81,7 @@ defineProps<{
             <div class="text-[13px] text-[#333] leading-[1.6] [&>ul]:my-1.5 [&>ul]:pl-4 [&>ul>li]:mb-1" v-html="proj.description"></div>
             
             <div v-if="proj.workDone" class="text-[13px] text-[#333] leading-[1.6] mt-1.5 [&>ul]:my-1.5 [&>ul]:pl-4 [&>ul>li]:mb-1">
-              <span class="font-semibold block mb-0.5">Responsibilities & Achievements:</span>
+              <span class="font-semibold block mb-0.5">Responsibilities:</span>
               <div v-html="proj.workDone"></div>
             </div>
           </div>

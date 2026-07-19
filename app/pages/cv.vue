@@ -73,9 +73,12 @@ const parseDateStr = (dateStr: string) => {
   if (parts.length === 2) {
     return new Date(Number(parts[1]), Number(parts[0]) - 1).getTime()
   }
-  if (parts.length === 1 && parts[0].length === 4) {
+  if (parts.length === 1 && parts[0]?.length === 4 && !isNaN(Number(parts[0]))) {
     return new Date(Number(parts[0]), 0).getTime()
   }
+  const timestamp = Date.parse(dateStr)
+  if (!isNaN(timestamp)) return timestamp
+  
   return 0
 }
 
@@ -83,7 +86,7 @@ const filteredProjects = computed(() => {
   if (!cvProfileRef.value || !cvProfileRef.value.selectedProjects) return []
   return projects.value
     .filter(p => cvProfileRef.value!.selectedProjects.includes(p.id))
-    .sort((a, b) => parseDateStr(a.startDate || '') - parseDateStr(b.startDate || ''))
+    .sort((a, b) => parseDateStr(b.startDate || '') - parseDateStr(a.startDate || ''))
     .map(proj => {
       const comp = companies.value.find(c => c.id === proj.companyId)
       return {

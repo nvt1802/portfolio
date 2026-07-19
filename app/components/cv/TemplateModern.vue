@@ -91,36 +91,42 @@ defineProps<{
         <section v-if="filteredProjects.length > 0" class="mb-8">
           <h3 class="text-[18px] font-bold text-[color:var(--cv-primary)] m-0 mb-6 flex items-center gap-3 after:content-[''] after:grow after:h-px after:bg-[color:var(--cv-border)]">Featured Projects</h3>
           <div class="space-y-7">
-            <div v-for="proj in filteredProjects" :key="proj.id" class="group">
-              <div class="flex justify-between items-start mb-2 flex-col sm:flex-row gap-1 sm:gap-4">
-                <div class="flex items-center gap-2.5 flex-wrap">
-                  <span class="font-bold text-[color:var(--cv-primary)] text-[16px]">{{ proj.title }}</span>
-                  <span v-if="proj.role" class="text-[14px] text-[color:var(--cv-text-light)] hidden sm:inline">|</span>
-                  <span v-if="proj.role" class="text-[14px] font-medium text-[color:var(--cv-text)]">{{ proj.role }}</span>
-                </div>
-                <div v-if="proj.startDate" class="text-[13px] text-[color:var(--cv-text-light)] shrink-0 mt-0.5 sm:mt-0">{{ proj.startDate }} - {{ proj.endDate || 'Present' }}</div>
+            <div v-for="proj in filteredProjects" :key="proj.id" class="group mb-8">
+              <div class="mb-2">
+                <span class="font-bold text-[color:var(--cv-primary)] text-[16px] block">{{ proj.title }}</span>
+                <span v-if="proj.startDate" class="text-[13.5px] text-[color:var(--cv-text)]">({{ proj.startDate }} - {{ proj.endDate || 'Present' }})</span>
               </div>
               
-              <div v-if="proj.client || proj.teamSize || proj.companyName" class="text-[13.5px] text-[color:var(--cv-text-light)] mb-3 flex flex-wrap gap-x-3 gap-y-1 items-center">
-                 <span v-if="proj.companyName"><strong class="font-semibold text-[color:var(--cv-text)]">Company:</strong> {{ proj.companyName }}</span>
-                 <span v-if="proj.companyName && proj.client" class="text-gray-300">•</span>
-                 <span v-if="proj.client"><strong class="font-semibold text-[color:var(--cv-text)]">Client:</strong> {{ proj.client }}</span>
-                 <span v-if="(proj.companyName || proj.client) && proj.teamSize" class="text-gray-300">•</span>
-                 <span v-if="proj.teamSize"><strong class="font-semibold text-[color:var(--cv-text)]">Team Size:</strong> {{ proj.teamSize }} members</span>
+              <div class="text-[13.5px] text-[color:var(--cv-text)] mt-3">
+                <div v-if="proj.client || proj.companyName" class="mb-1.5 flex flex-col sm:flex-row sm:gap-2">
+                  <span class="font-bold sm:w-[150px] shrink-0">Customer:</span>
+                  <span class="flex-1">{{ proj.client || proj.companyName }}</span>
+                </div>
+                <div v-if="proj.description" class="mb-1.5 flex flex-col sm:flex-row sm:gap-2">
+                  <span class="font-bold sm:w-[150px] shrink-0">Description:</span>
+                  <div class="flex-1 [&>p]:m-0" v-html="proj.description"></div>
+                </div>
+                <div v-if="proj.teamSize" class="mb-1.5 flex flex-col sm:flex-row sm:gap-2">
+                  <span class="font-bold sm:w-[150px] shrink-0">Team size:</span>
+                  <span class="flex-1">{{ proj.teamSize }}</span>
+                </div>
+                <div v-if="proj.role" class="mb-1.5 flex flex-col sm:flex-row sm:gap-2">
+                  <span class="font-bold sm:w-[150px] shrink-0">My position:</span>
+                  <span class="flex-1">{{ proj.role }}</span>
+                </div>
+                <div v-if="proj.workDone" class="mb-1.5 flex flex-col sm:flex-row sm:gap-2">
+                  <span class="font-bold sm:w-[150px] shrink-0">My responsibilities:</span>
+                  <div class="flex-1 [&>ul]:m-0 [&>ul]:pl-4 [&>ul>li]:mb-1 [&>p]:m-0" v-html="proj.workDone"></div>
+                </div>
+                <div v-if="proj.techStack && proj.techStack.length > 0" class="mb-1.5 flex flex-col sm:flex-row sm:gap-2">
+                  <span class="font-bold sm:w-[150px] shrink-0">Technologies used:</span>
+                  <span class="flex-1">{{ proj.techStack.join(', ') }}</span>
+                </div>
               </div>
 
-              <div class="flex flex-wrap gap-2 mb-3.5">
+              <div class="flex flex-wrap gap-2 mt-3" v-if="proj.demoLink || proj.githubLink">
                 <a v-if="proj.demoLink" :href="proj.demoLink" target="_blank" class="text-[11px] text-[color:var(--cv-accent)] border border-[color:var(--cv-accent)]/30 bg-[color:var(--cv-accent)]/5 hover:bg-[color:var(--cv-accent)]/10 px-2 py-0.5 rounded flex items-center gap-1.5 no-underline transition-colors"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Demo</a>
                 <a v-if="proj.githubLink" :href="proj.githubLink" target="_blank" class="text-[11px] text-gray-700 border border-gray-300 bg-gray-50 hover:bg-gray-100 px-2 py-0.5 rounded flex items-center gap-1.5 no-underline transition-colors"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg> GitHub</a>
-                
-                <span v-for="tech in proj.techStack" :key="tech" class="bg-white border border-[color:var(--cv-border)] text-[#4b5563] px-2.5 py-0.5 rounded-[4px] text-[11px] font-medium shadow-sm">{{ tech }}</span>
-              </div>
-              
-              <div class="text-[13.5px] leading-[1.7] text-[color:var(--cv-text)] [&>ul]:my-1.5 [&>ul]:pl-5 [&>ul>li]:mb-1" v-html="proj.description"></div>
-              
-              <div v-if="proj.workDone" class="text-[13.5px] leading-[1.7] text-[color:var(--cv-text)] mt-2 [&>ul]:my-1.5 [&>ul]:pl-5 [&>ul>li]:mb-1">
-                <strong class="text-[color:var(--cv-primary)] block mb-1">Responsibilities & Achievements:</strong>
-                <div v-html="proj.workDone"></div>
               </div>
             </div>
           </div>
