@@ -91,32 +91,32 @@ const saveExperience = async () => {
 <template>
   <div>
     <!-- Admin Header -->
-    <div class="admin-header" style="margin-bottom: 16px;">
+    <div class="mb-4">
       <div>
-        <h1 style="font-size: 28px;">Chỉnh Sửa Kinh Nghiệm</h1>
-        <p style="color: var(--text-secondary); margin-top: 4px;">Cập nhật thông tin kinh nghiệm làm việc</p>
+        <h1 class="text-[28px] font-bold">Chỉnh Sửa Kinh Nghiệm</h1>
+        <p class="text-[color:var(--text-secondary)] mt-1">Cập nhật thông tin kinh nghiệm làm việc</p>
       </div>
     </div>
 
     <!-- Breadcrumbs -->
-    <Breadcrumbs :items="[{ name: 'Kinh nghiệm', to: '/admin/content?tab=experiences' }, { name: 'Chỉnh sửa' }]" style="margin-bottom: 24px;" />
+    <Breadcrumbs :items="[{ name: 'Kinh nghiệm', to: '/admin/content?tab=experiences' }, { name: 'Chỉnh sửa' }]" class="mb-6" />
 
-    <div style="padding-bottom: 40px;">
+    <div class="pb-10">
     <!-- Form Container -->
-    <div class="glass-card" style="padding: 32px;">
+    <div class="glass-card p-8">
       <form @submit.prevent="saveExperience">
-        <div class="form-group" style="margin-bottom: 20px;">
+        <div class="form-group mb-5">
           <label class="form-label">Công ty / Tổ chức</label>
-          <select v-model="expForm.companyId" class="form-control" required style="padding: 12px; background: rgba(0,0,0,0.2); color: white; border: 1px solid rgba(255,255,255,0.1);">
+          <select v-model="expForm.companyId" class="form-control p-3 bg-black/20 text-white border border-white/10" required>
             <option value="" disabled>-- Chọn công ty --</option>
             <option v-for="comp in companies" :key="comp.id" :value="comp.id">{{ comp.name }}</option>
           </select>
         </div>
-        <div class="form-group" style="margin-bottom: 20px;">
+        <div class="form-group mb-5">
           <label class="form-label">Vị trí đảm nhận</label>
           <input v-model="expForm.role" type="text" class="form-control" placeholder="Ví dụ: Senior Developer" required />
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
           <div class="form-group">
             <label class="form-label">Tháng bắt đầu</label>
             <input v-model="expForm.startDate" type="text" class="form-control" placeholder="YYYY-MM (Ví dụ: 2019-06)" required />
@@ -126,18 +126,24 @@ const saveExperience = async () => {
             <input v-model="expForm.endDate" type="text" class="form-control" placeholder="YYYY-MM hoặc Present" required />
           </div>
         </div>
-        <div class="form-group" style="margin-bottom: 20px;">
+        <div class="form-group mb-5">
           <label class="form-label">Thứ tự hiển thị (Tùy chọn)</label>
           <input v-model.number="expForm.order" type="number" class="form-control" />
         </div>
 
-        <div class="form-group" style="margin-bottom: 24px;">
+        <div class="form-group mb-6">
           <label class="form-label">Mô tả chi tiết công việc</label>
           <textarea v-model="expForm.description" class="form-control" rows="6" placeholder="Nhập mô tả các nhiệm vụ và thành tựu..." required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%;" :disabled="isSavingExp">
-          {{ isSavingExp ? 'Đang lưu...' : 'Lưu Thay Đổi' }}
-        </button>
+        
+        <div class="flex gap-4">
+          <NuxtLink to="/admin/content?tab=experiences" class="btn btn-secondary flex-1 text-center no-underline">
+            Hủy
+          </NuxtLink>
+          <button type="submit" class="btn btn-primary flex-[2]" :disabled="isSavingExp">
+            {{ isSavingExp ? 'Đang lưu...' : 'Lưu Thay Đổi' }}
+          </button>
+        </div>
       </form>
     </div>
     </div>

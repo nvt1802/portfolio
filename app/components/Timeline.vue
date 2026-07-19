@@ -35,41 +35,69 @@ const formatPeriod = (start: string, end: string) => {
 </script>
 
 <template>
-  <div class="timeline">
+  <div class="relative max-w-[900px] mx-auto py-10 px-4 sm:px-0">
     <div 
-      v-for="item in items" 
+      v-for="(item, index) in items" 
       :key="item.id" 
-      class="timeline-item"
+      class="group relative flex flex-col sm:grid sm:grid-cols-[120px_40px_1fr] items-start mb-8 sm:mb-12 gap-0"
     >
-      <!-- Column 1: Logo Card -->
-      <div class="timeline-logo-container">
-        <div class="timeline-logo-card" :style="{ backgroundColor: item.logoBg || '#ffffff' }">
+      <!-- Mobile Timeline Line -->
+      <div class="absolute left-[15px] top-[30px] bottom-[-30px] w-[2px] bg-gradient-to-b from-[color:var(--primary)] to-[color:var(--secondary)] opacity-30 sm:hidden" v-if="index !== items.length - 1"></div>
+      
+      <!-- Mobile Timeline Dot -->
+      <div class="absolute left-[11px] top-[40px] w-2.5 h-2.5 rounded-full bg-[color:var(--accent)] shadow-[0_0_8px_var(--accent)] sm:hidden z-10"></div>
+
+      <!-- Column 1: Logo Card (Desktop only) -->
+      <div class="hidden sm:flex sm:justify-end sm:pr-2.5 sm:mt-2">
+        <div class="w-20 h-20 rounded-2xl flex items-center justify-center p-2.5 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.4),0_0_1px_rgba(255,255,255,0.1)] border border-black/5 transition-all duration-300 overflow-hidden group-hover:scale-105 group-hover:shadow-[0_12px_30px_-5px_rgba(0,0,0,0.5)]" :style="{ backgroundColor: item.logoBg || '#ffffff' }">
           <img 
             v-if="item.logoUrl" 
             :src="item.logoUrl" 
             :alt="item.company"
-            class="timeline-logo-img"
+            class="max-w-full max-h-full object-contain"
             :style="{ transform: `scale(${item.logoScale ?? 1}) translate(${item.logoX ?? 0}px, ${item.logoY ?? 0}px)` }"
           />
-          <span v-else class="timeline-logo-placeholder">
+          <span v-else class="font-display text-[28px] font-extrabold text-slate-800">
             {{ item.company.charAt(0) }}
           </span>
         </div>
       </div>
 
-      <!-- Column 2: Dot & Line -->
-      <div class="timeline-line-container">
-        <div class="timeline-line"></div>
-        <div class="timeline-dot"></div>
+      <!-- Column 2: Dot & Line (Desktop only) -->
+      <div class="relative hidden sm:flex justify-center h-full min-h-[100px]">
+        <div class="absolute top-0 w-[2px] bg-gradient-to-b from-[color:var(--primary)] to-[color:var(--secondary)] opacity-30" :class="index === items.length - 1 ? 'bottom-0' : '-bottom-12'"></div>
+        <div class="w-4 h-4 rounded-full bg-[color:var(--bg-dark)] border-[3px] border-[color:var(--accent)] shadow-[0_0_12px_var(--accent)] z-10 mt-8 transition-all duration-300 group-hover:bg-[color:var(--accent)] group-hover:scale-125"></div>
       </div>
 
       <!-- Column 3: Details Card -->
-      <div class="timeline-details">
-        <div class="glass-card">
-          <div class="timeline-time">{{ formatPeriod(item.startDate, item.endDate) }}</div>
-          <h3 class="timeline-title">{{ item.role }}</h3>
-          <div class="timeline-subtitle">{{ item.company }}</div>
-          <p class="timeline-desc" style="white-space: pre-wrap;">{{ item.description }}</p>
+      <div class="w-full pl-10 sm:pl-2.5">
+        <div class="bg-[color:var(--glass-bg)] backdrop-blur-[12px] border border-[color:var(--glass-border)] rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:border-[color:var(--border-color-hover)] hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5),0_0_20px_0_var(--primary-glow)]">
+          
+          <!-- Mobile Header (Logo + Company + Date) -->
+          <div class="flex items-center gap-3.5 sm:hidden mb-4 border-b border-white/10 pb-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center p-1.5 shrink-0 border border-black/5" :style="{ backgroundColor: item.logoBg || '#ffffff' }">
+              <img 
+                v-if="item.logoUrl" 
+                :src="item.logoUrl" 
+                class="max-w-full max-h-full object-contain"
+                :style="{ transform: `scale(${item.logoScale ?? 1}) translate(${item.logoX ?? 0}px, ${item.logoY ?? 0}px)` }"
+              />
+              <span v-else class="font-display text-[18px] font-extrabold text-slate-800">
+                {{ item.company.charAt(0) }}
+              </span>
+            </div>
+            <div>
+              <div class="text-[13px] font-semibold text-[color:var(--accent)] mb-0.5">{{ formatPeriod(item.startDate, item.endDate) }}</div>
+              <div class="text-[14px] text-[color:var(--text-secondary)] font-medium">{{ item.company }}</div>
+            </div>
+          </div>
+          
+          <!-- Desktop Header (Date only) -->
+          <div class="hidden sm:block text-[14px] font-semibold text-[color:var(--accent)] mb-1">{{ formatPeriod(item.startDate, item.endDate) }}</div>
+          
+          <h3 class="text-[17px] sm:text-[18px] font-bold mb-1.5 sm:mb-1.5">{{ item.role }}</h3>
+          <div class="hidden sm:block text-[14px] text-[color:var(--text-secondary)] mb-3">{{ item.company }}</div>
+          <p class="text-[14px] sm:text-[15px] text-[color:var(--text-secondary)] whitespace-pre-wrap leading-[1.6]">{{ item.description }}</p>
         </div>
       </div>
     </div>

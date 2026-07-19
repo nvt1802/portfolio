@@ -115,18 +115,18 @@ const printCv = () => {
 </script>
 
 <template>
-  <div class="cv-wrapper">
+  <div class="min-h-screen p-10 sm:p-[40px_20px] bg-[#f3f4f6] font-sans print:p-0 print:bg-transparent [--cv-bg:#ffffff] [--cv-text:#333333] [--cv-text-light:#666666] [--cv-primary:#111111] [--cv-accent:#2563eb] [--cv-border:#e5e7eb]">
     <!-- Print Action Button (Hidden when printing) -->
-    <div class="print-actions no-print">
-      <button @click="printCv" class="print-btn">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+    <div class="fixed top-5 right-5 flex gap-3 z-[100] print:hidden">
+      <button @click="printCv" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white border-none py-2.5 px-4 rounded-md font-semibold cursor-pointer shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-all duration-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
         Print to PDF
       </button>
-      <NuxtLink to="/" class="back-link">Back to Home</NuxtLink>
+      <NuxtLink to="/" class="flex items-center bg-white text-[#333] border border-gray-200 py-2.5 px-4 rounded-md no-underline font-medium shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)]">Back to Home</NuxtLink>
     </div>
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="loading-state no-print">
+    <div v-if="isLoading" class="text-center mt-[100px] text-gray-500 print:hidden">
       Loading CV data...
     </div>
 
@@ -142,77 +142,14 @@ const printCv = () => {
       />
     </div>
     
-    <div v-else class="loading-state no-print">
+    <div v-else class="text-center mt-[100px] text-gray-500 print:hidden">
       No CV configuration found. Please go to the admin panel to create one.
     </div>
 
   </div>
 </template>
 
-<style scoped>
-/* Base Variables for CV layout and background */
-.cv-wrapper {
-  --cv-bg: #ffffff;
-  --cv-text: #333333;
-  --cv-text-light: #666666;
-  --cv-primary: #111111;
-  --cv-accent: #2563eb;
-  --cv-border: #e5e7eb;
-
-  background-color: #f3f4f6; /* Gray background outside A4 */
-  min-height: 100vh;
-  padding: 40px 20px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-/* Print Actions (Floating) */
-.print-actions {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 12px;
-  z-index: 100;
-}
-.print-btn {
-  background: #2563eb;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-  transition: all 0.2s;
-}
-.print-btn:hover {
-  background: #1d4ed8;
-}
-.print-btn svg {
-  width: 20px;
-  height: 20px;
-}
-.back-link {
-  background: white;
-  color: #333;
-  border: 1px solid #e5e7eb;
-  padding: 10px 16px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-}
-.loading-state {
-  text-align: center;
-  margin-top: 100px;
-  color: #666;
-}
-
+<style>
 /* @media print for PDF Export */
 @media print {
   @page {
@@ -224,15 +161,6 @@ const printCv = () => {
     background: white !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-  }
-  
-  .cv-wrapper {
-    padding: 0;
-    background: transparent;
-  }
-
-  .no-print {
-    display: none !important;
   }
 }
 </style>

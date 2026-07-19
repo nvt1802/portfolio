@@ -77,10 +77,10 @@ const saveCompany = async () => {
 <template>
   <div>
     <!-- Header -->
-    <div class="admin-header" style="margin-bottom: 16px;">
+    <div class="mb-4">
       <div>
-        <h1 style="font-size: 28px;">Sửa Công Ty</h1>
-        <p style="color: var(--text-secondary); margin-top: 4px;">Chỉnh sửa thông tin công ty</p>
+        <h1 class="text-[28px] font-bold">Sửa Công Ty</h1>
+        <p class="text-[color:var(--text-secondary)] mt-1">Chỉnh sửa thông tin công ty</p>
       </div>
     </div>
 
@@ -88,23 +88,23 @@ const saveCompany = async () => {
     <Breadcrumbs :items="[
       { name: 'Công ty', to: '/admin/content?tab=companies' },
       { name: 'Chỉnh sửa' }
-    ]" />
+    ]" class="mb-6" />
 
-    <div v-if="!companyRef" style="padding: 40px; text-align: center; color: var(--text-muted);">
+    <div v-if="!companyRef" class="p-10 text-center text-[color:var(--text-muted)]">
       Đang tải dữ liệu...
     </div>
 
-    <div v-else class="glass-card" style="padding: 32px;">
+    <div v-else class="glass-card p-8">
       <form @submit.prevent="saveCompany">
         
-        <div class="form-group" style="margin-bottom: 24px;">
-          <label class="form-label">Tên công ty <span style="color: var(--primary);">*</span></label>
+        <div class="form-group mb-6">
+          <label class="form-label">Tên công ty <span class="text-[color:var(--primary)]">*</span></label>
           <input v-model="form.name" type="text" class="form-control" required placeholder="VD: Google, Microsoft..." />
         </div>
 
-        <h4 style="margin-top: 32px; margin-bottom: 16px; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">Logo & Hiển thị</h4>
+        <h4 class="mt-8 mb-4 text-[color:var(--accent)] border-b border-white/10 pb-2 font-semibold">Logo & Hiển thị</h4>
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; align-items: start;">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 items-start">
           <!-- Controls -->
           <div>
             <div class="form-group">
@@ -114,48 +114,48 @@ const saveCompany = async () => {
 
             <div class="form-group">
               <label class="form-label">Màu nền Logo (Hex)</label>
-              <div style="display: flex; gap: 12px;">
-                <input v-model="form.logoBg" type="color" style="width: 40px; height: 40px; padding: 0; border: 1px solid var(--border-color); border-radius: 4px; background: transparent; cursor: pointer;" />
+              <div class="flex gap-3">
+                <input v-model="form.logoBg" type="color" class="w-10 h-10 p-0 border border-[color:var(--border-color)] rounded bg-transparent cursor-pointer" />
                 <input v-model="form.logoBg" type="text" class="form-control" placeholder="#ffffff" />
               </div>
             </div>
 
             <div class="form-group">
               <label class="form-label">Kích thước (Scale: {{ form.logoScale }})</label>
-              <input v-model.number="form.logoScale" type="range" min="0.1" max="3" step="0.1" style="width: 100%; accent-color: var(--accent);" />
+              <input v-model.number="form.logoScale" type="range" min="0.1" max="3" step="0.1" class="w-full accent-[color:var(--accent)]" />
             </div>
 
             <div class="form-group">
               <label class="form-label">Vị trí X ({{ form.logoX }}px)</label>
-              <input v-model.number="form.logoX" type="range" min="-100" max="100" step="1" style="width: 100%; accent-color: var(--accent);" />
+              <input v-model.number="form.logoX" type="range" min="-100" max="100" step="1" class="w-full accent-[color:var(--accent)]" />
             </div>
 
             <div class="form-group">
               <label class="form-label">Vị trí Y ({{ form.logoY }}px)</label>
-              <input v-model.number="form.logoY" type="range" min="-100" max="100" step="1" style="width: 100%; accent-color: var(--accent);" />
+              <input v-model.number="form.logoY" type="range" min="-100" max="100" step="1" class="w-full accent-[color:var(--accent)]" />
             </div>
           </div>
 
           <!-- Preview -->
           <div>
             <label class="form-label">Xem trước (Preview)</label>
-            <div style="width: 100%; max-width: 300px; margin: 0 auto; aspect-ratio: 1; border: 1px dashed var(--border-color); border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2);">
-              <div :style="{ backgroundColor: form.logoBg || '#ffffff' }" style="width: 100px; height: 100px; border-radius: 16px; display: flex; align-items: center; justify-content: center; padding: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
-                <img v-if="form.logoUrl" :src="form.logoUrl" :style="{ transform: `scale(${form.logoScale}) translate(${form.logoX}px, ${form.logoY}px)` }" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
-                <span v-else style="color: #1e293b; font-weight: 800; font-size: 32px;">{{ form.name.charAt(0) || '?' }}</span>
+            <div class="w-full max-w-[300px] mx-auto aspect-square border border-dashed border-[color:var(--border-color)] rounded-xl flex items-center justify-center bg-black/20">
+              <div :style="{ backgroundColor: form.logoBg || '#ffffff' }" class="w-[100px] h-[100px] rounded-2xl flex items-center justify-center p-2 shadow-[0_10px_25px_rgba(0,0,0,0.3)] overflow-hidden border border-white/10">
+                <img v-if="form.logoUrl" :src="form.logoUrl" :style="{ transform: `scale(${form.logoScale}) translate(${form.logoX}px, ${form.logoY}px)` }" class="max-w-full max-h-full object-contain" />
+                <span v-else class="text-slate-800 font-extrabold text-3xl">{{ form.name.charAt(0) || '?' }}</span>
               </div>
             </div>
-            <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px; text-align: center;">
+            <p class="text-xs text-[color:var(--text-muted)] mt-3 text-center">
               Di chuyển các thanh trượt bên trái để căn chỉnh logo vừa vặn trong khung hiển thị (kích thước chuẩn 100x100px).
             </p>
           </div>
         </div>
 
-        <div style="display: flex; gap: 16px; margin-top: 32px;">
-          <NuxtLink to="/admin/content?tab=companies" class="btn btn-secondary" style="flex: 1; text-align: center; text-decoration: none;">
+        <div class="flex gap-4 mt-8">
+          <NuxtLink to="/admin/content?tab=companies" class="btn btn-secondary flex-1 text-center no-underline">
             Hủy
           </NuxtLink>
-          <button type="submit" class="btn btn-primary" :disabled="isSaving" style="flex: 2;">
+          <button type="submit" class="btn btn-primary flex-[2]" :disabled="isSaving">
             {{ isSaving ? 'Đang cập nhật...' : 'Cập nhật Công ty' }}
           </button>
         </div>

@@ -140,37 +140,37 @@ const saveProject = async () => {
 <template>
   <div>
     <!-- Admin Header -->
-    <div class="admin-header" style="margin-bottom: 16px;">
+    <div class="mb-4">
       <div>
-        <h1 style="font-size: 28px;">Chỉnh Sửa Dự Án</h1>
-        <p style="color: var(--text-secondary); margin-top: 4px;">Cập nhật thông tin dự án của bạn</p>
+        <h1 class="text-[28px] font-bold">Chỉnh Sửa Dự Án</h1>
+        <p class="text-[color:var(--text-secondary)] mt-1">Cập nhật thông tin dự án của bạn</p>
       </div>
     </div>
 
     <!-- Breadcrumbs -->
-    <Breadcrumbs :items="[{ name: 'Dự án', to: '/admin/content?tab=projects' }, { name: 'Chỉnh sửa' }]" style="margin-bottom: 24px;" />
+    <Breadcrumbs :items="[{ name: 'Dự án', to: '/admin/content?tab=projects' }, { name: 'Chỉnh sửa' }]" class="mb-6" />
 
-    <div style="padding-bottom: 40px;">
+    <div class="pb-10">
     <!-- Form Container -->
-    <div class="glass-card" style="padding: 32px;">
+    <div class="glass-card p-8">
       <form @submit.prevent="saveProject">
-        <div class="form-group" style="margin-bottom: 20px;">
+        <div class="form-group mb-5">
           <label class="form-label">Công ty / Tổ chức</label>
-          <select v-model="projForm.companyId" class="form-control" style="padding: 12px; background: rgba(0,0,0,0.2); color: white; border: 1px solid rgba(255,255,255,0.1);">
+          <select v-model="projForm.companyId" class="form-control p-3 bg-black/20 text-white border border-white/10">
             <option value="">-- Thuộc dự án cá nhân (Không thuộc công ty) --</option>
             <option v-for="comp in companies" :key="comp.id" :value="comp.id">{{ comp.name }}</option>
           </select>
         </div>
-        <div class="form-group" style="margin-bottom: 20px;">
+        <div class="form-group mb-5">
           <label class="form-label">Tên dự án</label>
           <input v-model="projForm.title" type="text" class="form-control" placeholder="Ví dụ: Hệ thống AI Chatbot" required />
         </div>
-        <div class="form-group" style="margin-bottom: 20px;">
+        <div class="form-group mb-5">
           <label class="form-label">Mô tả dự án</label>
           <textarea v-model="projForm.description" class="form-control" rows="4" placeholder="Nhập mô tả ngắn về dự án..." required></textarea>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
           <div class="form-group">
             <label class="form-label">Thời gian bắt đầu</label>
             <input v-model="projForm.startDate" type="text" class="form-control" placeholder="Ví dụ: 01/2021" />
@@ -181,7 +181,7 @@ const saveProject = async () => {
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
           <div class="form-group">
             <label class="form-label">Team size</label>
             <input v-model="projForm.teamSize" type="text" class="form-control" placeholder="Ví dụ: 5 members" />
@@ -192,21 +192,21 @@ const saveProject = async () => {
           </div>
         </div>
 
-        <div class="form-group" style="margin-bottom: 20px;">
+        <div class="form-group mb-5">
           <label class="form-label">Khách hàng / Đối tác</label>
           <input v-model="projForm.client" type="text" class="form-control" placeholder="Ví dụ: Tập đoàn Vingroup, Khách hàng cá nhân,..." />
         </div>
 
-        <div class="form-group" style="margin-bottom: 20px;">
+        <div class="form-group mb-5">
           <label class="form-label">Chi tiết công việc / Đóng góp</label>
           <textarea v-model="projForm.workDone" class="form-control" rows="4" placeholder="Liệt kê chi tiết các công việc bạn làm trong dự án (Có thể dùng gạch đầu dòng)..."></textarea>
         </div>
 
-        <div class="form-group" style="margin-bottom: 20px;">
+        <div class="form-group mb-5">
           <label class="form-label">Công nghệ sử dụng (Cách nhau bằng dấu phẩy)</label>
           <input v-model="projForm.techStackInput" type="text" class="form-control" placeholder="Ví dụ: Vue 3, Node.js, TensorFlow" required />
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
           <div class="form-group">
             <label class="form-label">Demo Link (Nếu có)</label>
             <input v-model="projForm.demoLink" type="url" class="form-control" placeholder="https://..." />
@@ -216,22 +216,28 @@ const saveProject = async () => {
             <input v-model="projForm.githubLink" type="url" class="form-control" placeholder="https://github.com/..." />
           </div>
         </div>
-        <div class="form-group" style="margin-bottom: 24px;">
+        <div class="form-group mb-6">
           <label class="form-label">Ảnh minh họa (Tải lên hoặc nhập URL)</label>
-          <div style="display: flex; gap: 16px; margin-bottom: 12px;">
-            <input type="file" @change="handleFileUpload" accept="image/*" class="form-control" style="flex: 1; padding: 10px;" />
-            <input v-model="projForm.imageUrl" type="text" class="form-control" placeholder="Hoặc nhập https://..." style="flex: 2;" />
+          <div class="flex flex-col sm:flex-row gap-4 mb-3">
+            <input type="file" @change="handleFileUpload" accept="image/*" class="form-control flex-1 p-2.5" />
+            <input v-model="projForm.imageUrl" type="text" class="form-control flex-[2]" placeholder="Hoặc nhập https://..." />
           </div>
-          <div v-if="isUploading" style="font-size: 13px; color: var(--accent); margin-bottom: 12px;">Đang tải lên...</div>
+          <div v-if="isUploading" class="text-[13px] text-[color:var(--accent)] mb-3">Đang tải lên...</div>
 
-          <div v-if="projForm.imageUrl" style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
-            <span style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 8px;">Xem trước ảnh:</span>
-            <img :src="projForm.imageUrl" style="display: block; width: 100%; max-height: 200px; object-fit: contain; border-radius: 6px; border: 1px dashed var(--border-color);" />
+          <div v-if="projForm.imageUrl" class="mt-4 p-3 bg-white/5 border border-[color:var(--border-color)] rounded-[color:var(--radius-sm)]">
+            <span class="text-[13px] text-[color:var(--text-secondary)] block mb-2">Xem trước ảnh:</span>
+            <img :src="projForm.imageUrl" class="block w-full max-h-[200px] object-contain rounded-md border border-dashed border-[color:var(--border-color)]" />
           </div>
         </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%;" :disabled="isSavingProj">
-          {{ isSavingProj ? 'Đang xử lý...' : 'Lưu Thay Đổi' }}
-        </button>
+        
+        <div class="flex gap-4">
+          <NuxtLink to="/admin/content?tab=projects" class="btn btn-secondary flex-1 text-center no-underline">
+            Hủy
+          </NuxtLink>
+          <button type="submit" class="btn btn-primary flex-[2]" :disabled="isSavingProj">
+            {{ isSavingProj ? 'Đang xử lý...' : 'Lưu Thay Đổi' }}
+          </button>
+        </div>
       </form>
     </div>
     </div>

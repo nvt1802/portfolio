@@ -128,6 +128,8 @@ const backendSkills = computed(() => skills.value.filter(s => s.category === 'ba
 const toolsSkills = computed(() => skills.value.filter(s => s.category === 'tools'))
 const aiSkills = computed(() => skills.value.filter(s => s.category === 'ai-automation'))
 
+const isMobileMenuOpen = ref(false)
+
 // Nav links smooth scroll helper
 const scrollToSection = (id: string) => {
   const element = document.getElementById(id)
@@ -138,190 +140,211 @@ const scrollToSection = (id: string) => {
 </script>
 
 <template>
-  <div class="portfolio-wrapper">
+  <div class="min-h-screen flex flex-col">
     <!-- Glow Backdrop Effects -->
-    <div class="glow-backdrop">
-      <div class="glow-orb-1"></div>
-      <div class="glow-orb-2"></div>
+    <div class="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+      <div class="absolute top-[-10%] right-[-5%] w-[40vw] h-[40vw] max-w-[600px] max-h-[600px] rounded-full bg-[color:var(--primary)] opacity-[0.15] blur-[100px] animate-[pulse_8s_ease-in-out_infinite_alternate]"></div>
+      <div class="absolute bottom-[-10%] left-[-5%] w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] rounded-full bg-[color:var(--accent)] opacity-[0.1] blur-[120px] animate-[pulse_10s_ease-in-out_infinite_alternate-reverse]"></div>
     </div>
 
     <!-- Header Navigation -->
-    <header class="header">
-      <div class="container nav-container">
-        <a href="#" class="logo">PORTFOLIO</a>
-        <nav class="nav-links">
+    <header class="fixed top-0 left-0 right-0 h-20 bg-slate-900/70 backdrop-blur-md border-b border-[color:var(--border-color)] z-50 flex items-center">
+      <div class="container flex justify-between items-center">
+        <a href="#" class="font-display text-[20px] md:text-[22px] font-extrabold text-[color:var(--text-primary)] no-underline tracking-[-0.02em]">PORTFOLIO</a>
+        
+        <!-- Desktop Nav -->
+        <nav class="hidden md:flex items-center gap-6">
           <template v-for="section in orderedSections" :key="'nav-' + section.id">
-            <button v-if="section.id !== 'hero' && section.visible" @click="scrollToSection(section.id)">{{ section.name }}</button>
+            <button v-if="section.id !== 'hero' && section.visible" @click="scrollToSection(section.id)" class="bg-transparent border-none text-[color:var(--text-secondary)] font-sans text-[15px] font-medium cursor-pointer transition-colors duration-200 hover:text-[color:var(--text-primary)]">{{ section.name }}</button>
           </template>
-          <NuxtLink to="/admin" class="nav-admin-btn">
-            <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <NuxtLink to="/admin" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-[color:var(--border-color)] text-[color:var(--text-primary)] no-underline text-[14px] font-semibold border border-[color:var(--border-color)] transition-colors duration-200 hover:bg-white/10 hover:border-[color:var(--border-color-hover)]">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             Admin
           </NuxtLink>
         </nav>
+
+        <!-- Mobile Menu Toggle -->
+        <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="md:hidden text-[color:var(--text-primary)] p-2">
+          <svg v-if="!isMobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      
+      <!-- Mobile Nav Dropdown -->
+      <div v-if="isMobileMenuOpen" class="absolute top-20 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-b border-[color:var(--border-color)] md:hidden flex flex-col p-4 gap-4 shadow-2xl">
+        <template v-for="section in orderedSections" :key="'mob-nav-' + section.id">
+          <button v-if="section.id !== 'hero' && section.visible" @click="scrollToSection(section.id); isMobileMenuOpen = false" class="text-left bg-transparent border-none text-[color:var(--text-secondary)] font-sans text-[16px] font-medium cursor-pointer py-2 px-4 hover:bg-white/5 rounded-lg">{{ section.name }}</button>
+        </template>
+        <NuxtLink to="/admin" class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-[color:var(--primary)] text-white font-semibold mt-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Admin Panel
+        </NuxtLink>
       </div>
     </header>
 
     <template v-for="section in orderedSections" :key="section.id">
       <!-- Hero Section -->
-      <section v-if="section.id === 'hero' && section.visible" class="hero-section">
-      <div class="container hero-container" style="display: flex; gap: 40px; justify-content: space-between; flex-wrap: wrap-reverse;">
-        <div class="hero-content">
-          <div class="badge badge-primary hero-badge">{{ heroData.badgeText }}</div>
-          <h1 class="hero-title">
+      <section v-if="section.id === 'hero' && section.visible" class="min-h-screen flex items-center pt-[120px] pb-[80px]">
+      <div class="container flex flex-col-reverse lg:flex-row items-center gap-10 lg:gap-16 justify-between text-center lg:text-left">
+        <div class="max-w-[700px] flex flex-col items-center lg:items-start">
+          <div class="badge badge-primary mb-6">{{ heroData.badgeText }}</div>
+          <h1 class="text-[36px] sm:text-[44px] md:text-[54px] leading-[1.2] font-extrabold mb-6">
             {{ heroData.titleLine1 }}<br />
             <span class="gradient-text font-display">{{ heroData.titleLine2 }}</span>
           </h1>
-          <p class="hero-description">
+          <p class="text-[color:var(--text-secondary)] text-[16px] sm:text-[18px] leading-[1.6] mb-10 max-w-[90%] sm:max-w-full">
             {{ heroData.description }}
           </p>
-          <div class="hero-actions">
-            <button @click="scrollToSection('projects')" class="btn btn-primary">
+          <div class="flex gap-4 flex-wrap justify-center lg:justify-start">
+            <button @click="scrollToSection('projects')" class="btn btn-primary w-full sm:w-auto">
               View Projects
             </button>
             <a 
               v-if="cvSettings && cvSettings.cvUrl" 
               :href="cvSettings.cvUrl" 
               target="_blank" 
-              class="btn btn-secondary"
+              class="btn btn-secondary w-full sm:w-auto"
             >
-              <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
               </svg>
-              Download CV (PDF)
+              Download CV
             </a>
           </div>
         </div>
-        <div v-if="personalInfo && personalInfo.avatarUrl" class="hero-image" style="flex: 1; min-width: 280px; display: flex; justify-content: center; align-items: center;">
-          <img :src="personalInfo.avatarUrl" alt="Avatar" style="width: 320px; height: 320px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 40px rgba(124, 58, 237, 0.4); border: 2px solid var(--border-color);" />
+        <div v-if="personalInfo && personalInfo.avatarUrl" class="flex-1 w-full flex justify-center lg:justify-end items-center">
+          <img :src="personalInfo.avatarUrl" alt="Avatar" class="w-[200px] h-[200px] sm:w-[260px] sm:h-[260px] rounded-full object-cover shadow-[0_0_40px_rgba(124,58,237,0.4)] border-2 border-[color:var(--border-color)]" />
         </div>
       </div>
     </section>
 
     <!-- Skills Section -->
-    <section v-else-if="section.id === 'skills' && section.visible" id="skills" class="skills-section">
+    <section v-else-if="section.id === 'skills' && section.visible" id="skills" class="py-20">
       <div class="container">
-        <div class="section-header">
-          <h2 class="section-title gradient-text">{{ section.name }}</h2>
-          <p class="section-subtitle" v-if="section.subtitle">{{ section.subtitle }}</p>
+        <div class="text-center mb-14">
+          <h2 class="text-[36px] font-extrabold mb-3 gradient-text">{{ section.name }}</h2>
+          <p class="text-[color:var(--text-secondary)] text-[16px] max-w-[600px] mx-auto" v-if="section.subtitle">{{ section.subtitle }}</p>
         </div>
 
-        <div class="skills-grid-new">
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-6">
           <!-- Category: Frontend -->
-          <div class="skills-category-container">
-            <h3 class="skills-category-title">Frontend Development</h3>
-            <div class="skills-circles-grid" v-if="frontendSkills.filter(s => s.displayType !== 'text').length > 0">
-              <div v-for="skill in frontendSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="skill-circle-item">
-                <div class="skill-circle-wrapper">
-                  <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="skill-circle-img" />
-                  <span v-else class="skill-circle-placeholder">{{ skill.name.charAt(0) }}</span>
+          <div class="glass-card p-6 sm:p-8 flex flex-col items-center">
+            <h3 class="text-[18px] font-bold mb-6 text-center text-white border-b border-[color:var(--border-color)] pb-2.5 w-full">Frontend Development</h3>
+            <div class="flex flex-wrap justify-center gap-4 sm:gap-6" v-if="frontendSkills.filter(s => s.displayType !== 'text').length > 0">
+              <div v-for="skill in frontendSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="flex flex-col items-center group">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 border border-white/10 flex justify-center items-center mb-2.5 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-2 group-hover:scale-110 group-hover:bg-white/10 group-hover:border-white/20 group-hover:shadow-[0_10px_20px_-5px_rgba(0,0,0,0.3)]">
+                  <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="max-w-[60%] max-h-[60%] object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] transition-transform duration-300 group-hover:scale-110" />
+                  <span v-else class="text-[20px] font-bold text-[color:var(--primary)]">{{ skill.name.charAt(0) }}</span>
                 </div>
-                <div class="skill-circle-name">{{ skill.name }}</div>
+                <div class="text-[12px] sm:text-[13px] font-medium text-[color:var(--text-secondary)] text-center transition-colors duration-300 group-hover:text-white">{{ skill.name }}</div>
               </div>
             </div>
-            <div class="skills-text-list" v-if="frontendSkills.filter(s => s.displayType === 'text').length > 0" style="margin-top: 24px; display: flex; flex-direction: column; gap: 16px; text-align: left; padding: 0 16px;">
-              <div v-for="skill in frontendSkills.filter(s => s.displayType === 'text')" :key="skill.id" class="skill-text-item">
-                <div class="skill-text-desc" style="white-space: pre-wrap; font-size: 14px; color: var(--text-secondary); line-height: 1.6;">{{ skill.description }}</div>
+            <div v-if="frontendSkills.filter(s => s.displayType === 'text').length > 0" class="mt-6 flex flex-col gap-4 text-left px-4 w-full">
+              <div v-for="skill in frontendSkills.filter(s => s.displayType === 'text')" :key="skill.id">
+                <div class="whitespace-pre-wrap text-[14px] text-[color:var(--text-secondary)] leading-[1.6]">{{ skill.description }}</div>
               </div>
             </div>
-            <div v-if="frontendSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Updating...</div>
+            <div v-if="frontendSkills.length === 0" class="text-center text-[color:var(--text-secondary)] mt-2.5">Updating...</div>
           </div>
 
           <!-- Category: Backend -->
-          <div class="skills-category-container">
-            <h3 class="skills-category-title">Backend Development</h3>
-            <div class="skills-circles-grid" v-if="backendSkills.filter(s => s.displayType !== 'text').length > 0">
-              <div v-for="skill in backendSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="skill-circle-item">
-                <div class="skill-circle-wrapper">
-                  <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="skill-circle-img" />
-                  <span v-else class="skill-circle-placeholder">{{ skill.name.charAt(0) }}</span>
+          <div class="glass-card p-6 sm:p-8 flex flex-col items-center">
+            <h3 class="text-[18px] font-bold mb-6 text-center text-white border-b border-[color:var(--border-color)] pb-2.5 w-full">Backend Development</h3>
+            <div class="flex flex-wrap justify-center gap-4 sm:gap-6" v-if="backendSkills.filter(s => s.displayType !== 'text').length > 0">
+              <div v-for="skill in backendSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="flex flex-col items-center group">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 border border-white/10 flex justify-center items-center mb-2.5 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-2 group-hover:scale-110 group-hover:bg-white/10 group-hover:border-white/20 group-hover:shadow-[0_10px_20px_-5px_rgba(0,0,0,0.3)]">
+                  <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="max-w-[60%] max-h-[60%] object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] transition-transform duration-300 group-hover:scale-110" />
+                  <span v-else class="text-[20px] font-bold text-[color:var(--primary)]">{{ skill.name.charAt(0) }}</span>
                 </div>
-                <div class="skill-circle-name">{{ skill.name }}</div>
+                <div class="text-[12px] sm:text-[13px] font-medium text-[color:var(--text-secondary)] text-center transition-colors duration-300 group-hover:text-white">{{ skill.name }}</div>
               </div>
             </div>
-            <div class="skills-text-list" v-if="backendSkills.filter(s => s.displayType === 'text').length > 0" style="margin-top: 24px; display: flex; flex-direction: column; gap: 16px; text-align: left; padding: 0 16px;">
-              <div v-for="skill in backendSkills.filter(s => s.displayType === 'text')" :key="skill.id" class="skill-text-item">
-                <div class="skill-text-desc" style="white-space: pre-wrap; font-size: 14px; color: var(--text-secondary); line-height: 1.6;">{{ skill.description }}</div>
+            <div v-if="backendSkills.filter(s => s.displayType === 'text').length > 0" class="mt-6 flex flex-col gap-4 text-left px-4 w-full">
+              <div v-for="skill in backendSkills.filter(s => s.displayType === 'text')" :key="skill.id">
+                <div class="whitespace-pre-wrap text-[14px] text-[color:var(--text-secondary)] leading-[1.6]">{{ skill.description }}</div>
               </div>
             </div>
-            <div v-if="backendSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Updating...</div>
+            <div v-if="backendSkills.length === 0" class="text-center text-[color:var(--text-secondary)] mt-2.5">Updating...</div>
           </div>
 
           <!-- Category: AI & Automation -->
-          <div class="skills-category-container">
-            <h3 class="skills-category-title">AI & Automation</h3>
-            <div class="skills-circles-grid" v-if="aiSkills.filter(s => s.displayType !== 'text').length > 0">
-              <div v-for="skill in aiSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="skill-circle-item">
-                <div class="skill-circle-wrapper">
-                  <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="skill-circle-img" />
-                  <span v-else class="skill-circle-placeholder">{{ skill.name.charAt(0) }}</span>
+          <div class="glass-card p-6 sm:p-8 flex flex-col items-center">
+            <h3 class="text-[18px] font-bold mb-6 text-center text-white border-b border-[color:var(--border-color)] pb-2.5 w-full">AI & Automation</h3>
+            <div class="flex flex-wrap justify-center gap-4 sm:gap-6" v-if="aiSkills.filter(s => s.displayType !== 'text').length > 0">
+              <div v-for="skill in aiSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="flex flex-col items-center group">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 border border-white/10 flex justify-center items-center mb-2.5 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-2 group-hover:scale-110 group-hover:bg-white/10 group-hover:border-white/20 group-hover:shadow-[0_10px_20px_-5px_rgba(0,0,0,0.3)]">
+                  <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="max-w-[60%] max-h-[60%] object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] transition-transform duration-300 group-hover:scale-110" />
+                  <span v-else class="text-[20px] font-bold text-[color:var(--primary)]">{{ skill.name.charAt(0) }}</span>
                 </div>
-                <div class="skill-circle-name">{{ skill.name }}</div>
+                <div class="text-[12px] sm:text-[13px] font-medium text-[color:var(--text-secondary)] text-center transition-colors duration-300 group-hover:text-white">{{ skill.name }}</div>
               </div>
             </div>
-            <div class="skills-text-list" v-if="aiSkills.filter(s => s.displayType === 'text').length > 0" style="margin-top: 24px; display: flex; flex-direction: column; gap: 16px; text-align: left; padding: 0 16px;">
-              <div v-for="skill in aiSkills.filter(s => s.displayType === 'text')" :key="skill.id" class="skill-text-item">
-                <div class="skill-text-desc" style="white-space: pre-wrap; font-size: 14px; color: var(--text-secondary); line-height: 1.6;">{{ skill.description }}</div>
+            <div v-if="aiSkills.filter(s => s.displayType === 'text').length > 0" class="mt-6 flex flex-col gap-4 text-left px-4 w-full">
+              <div v-for="skill in aiSkills.filter(s => s.displayType === 'text')" :key="skill.id">
+                <div class="whitespace-pre-wrap text-[14px] text-[color:var(--text-secondary)] leading-[1.6]">{{ skill.description }}</div>
               </div>
             </div>
-            <div v-if="aiSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Updating...</div>
+            <div v-if="aiSkills.length === 0" class="text-center text-[color:var(--text-secondary)] mt-2.5">Updating...</div>
           </div>
 
           <!-- Category: Tools & DevOps -->
-          <div class="skills-category-container">
-            <h3 class="skills-category-title">Tools & DevOps</h3>
-            <div class="skills-circles-grid" v-if="toolsSkills.filter(s => s.displayType !== 'text').length > 0">
-              <div v-for="skill in toolsSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="skill-circle-item">
-                <div class="skill-circle-wrapper">
-                  <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="skill-circle-img" />
-                  <span v-else class="skill-circle-placeholder">{{ skill.name.charAt(0) }}</span>
+          <div class="glass-card p-6 sm:p-8 flex flex-col items-center">
+            <h3 class="text-[18px] font-bold mb-6 text-center text-white border-b border-[color:var(--border-color)] pb-2.5 w-full">Tools & DevOps</h3>
+            <div class="flex flex-wrap justify-center gap-4 sm:gap-6" v-if="toolsSkills.filter(s => s.displayType !== 'text').length > 0">
+              <div v-for="skill in toolsSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="flex flex-col items-center group">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 border border-white/10 flex justify-center items-center mb-2.5 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-2 group-hover:scale-110 group-hover:bg-white/10 group-hover:border-white/20 group-hover:shadow-[0_10px_20px_-5px_rgba(0,0,0,0.3)]">
+                  <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="max-w-[60%] max-h-[60%] object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] transition-transform duration-300 group-hover:scale-110" />
+                  <span v-else class="text-[20px] font-bold text-[color:var(--primary)]">{{ skill.name.charAt(0) }}</span>
                 </div>
-                <div class="skill-circle-name">{{ skill.name }}</div>
+                <div class="text-[12px] sm:text-[13px] font-medium text-[color:var(--text-secondary)] text-center transition-colors duration-300 group-hover:text-white">{{ skill.name }}</div>
               </div>
             </div>
-            <div class="skills-text-list" v-if="toolsSkills.filter(s => s.displayType === 'text').length > 0" style="margin-top: 24px; display: flex; flex-direction: column; gap: 16px; text-align: left; padding: 0 16px;">
-              <div v-for="skill in toolsSkills.filter(s => s.displayType === 'text')" :key="skill.id" class="skill-text-item">
-                <div class="skill-text-desc" style="white-space: pre-wrap; font-size: 14px; color: var(--text-secondary); line-height: 1.6;">{{ skill.description }}</div>
+            <div v-if="toolsSkills.filter(s => s.displayType === 'text').length > 0" class="mt-6 flex flex-col gap-4 text-left px-4 w-full">
+              <div v-for="skill in toolsSkills.filter(s => s.displayType === 'text')" :key="skill.id">
+                <div class="whitespace-pre-wrap text-[14px] text-[color:var(--text-secondary)] leading-[1.6]">{{ skill.description }}</div>
               </div>
             </div>
-            <div v-if="toolsSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Updating...</div>
+            <div v-if="toolsSkills.length === 0" class="text-center text-[color:var(--text-secondary)] mt-2.5">Updating...</div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Experience Section -->
-    <section v-else-if="section.id === 'experience' && section.visible" id="experience" class="experience-section">
+    <section v-else-if="section.id === 'experience' && section.visible" id="experience" class="py-20">
       <div class="container">
-        <div class="section-header">
-          <h2 class="section-title gradient-text">{{ section.name }}</h2>
-          <p class="section-subtitle" v-if="section.subtitle">{{ section.subtitle }}</p>
+        <div class="text-center mb-14">
+          <h2 class="text-[36px] font-extrabold mb-3 gradient-text">{{ section.name }}</h2>
+          <p class="text-[color:var(--text-secondary)] text-[16px] max-w-[600px] mx-auto" v-if="section.subtitle">{{ section.subtitle }}</p>
         </div>
 
         <Timeline v-if="mappedExperiences && mappedExperiences.length > 0" :items="mappedExperiences" />
-        <div v-else style="text-align: center; color: var(--text-secondary); padding: 40px 0;">
+        <div v-else class="text-center text-[color:var(--text-secondary)] py-10">
           Experience data is being updated...
         </div>
       </div>
     </section>
 
     <!-- Projects Section -->
-    <section v-else-if="section.id === 'projects' && section.visible" id="projects" class="projects-section">
+    <section v-else-if="section.id === 'projects' && section.visible" id="projects" class="py-20">
       <div class="container">
-        <div class="section-header">
-          <h2 class="section-title gradient-text">{{ section.name }}</h2>
-          <p class="section-subtitle" v-if="section.subtitle">{{ section.subtitle }}</p>
+        <div class="text-center mb-14">
+          <h2 class="text-[36px] font-extrabold mb-3 gradient-text">{{ section.name }}</h2>
+          <p class="text-[color:var(--text-secondary)] text-[16px] max-w-[600px] mx-auto" v-if="section.subtitle">{{ section.subtitle }}</p>
         </div>
 
-        <div v-if="mappedProjects && mappedProjects.length > 0" class="projects-grid">
+        <div v-if="mappedProjects && mappedProjects.length > 0" class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 sm:gap-8">
           <ProjectCard 
             v-for="project in mappedProjects" 
             :key="project.id" 
             :project="project" 
           />
         </div>
-        <div v-else style="text-align: center; color: var(--text-secondary); padding: 40px 0;">
+        <div v-else class="text-center text-[color:var(--text-secondary)] py-10">
           Projects are being updated...
         </div>
       </div>
@@ -329,230 +352,13 @@ const scrollToSection = (id: string) => {
     </template>
 
     <!-- Footer -->
-    <footer class="footer">
-      <div class="container footer-container">
-        <p class="copyright">&copy; {{ new Date().getFullYear() }} Personal Portfolio. All rights reserved.</p>
-        <div class="footer-links">
-          <NuxtLink to="/admin" style="color: var(--text-muted); text-decoration: none; font-size: 14px;">Admin Panel</NuxtLink>
+    <footer class="mt-auto border-t border-[color:var(--border-color)] py-8 bg-slate-900/40">
+      <div class="container flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+        <p class="text-[color:var(--text-secondary)] text-[14px]">&copy; {{ new Date().getFullYear() }} Personal Portfolio. All rights reserved.</p>
+        <div class="flex gap-6">
+          <NuxtLink to="/admin" class="text-[color:var(--text-muted)] no-underline text-[14px] hover:text-[color:var(--text-primary)]">Admin Panel</NuxtLink>
         </div>
       </div>
     </footer>
   </div>
 </template>
-
-<style scoped>
-.portfolio-wrapper {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Header Navigation */
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border-color);
-  z-index: 50;
-  display: flex;
-  align-items: center;
-}
-
-.nav-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--text-primary);
-  text-decoration: none;
-  letter-spacing: -0.02em;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.nav-links button {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  font-family: var(--font-sans);
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.nav-links button:hover {
-  color: var(--text-primary);
-}
-
-.nav-admin-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-  background: var(--border-color);
-  color: var(--text-primary);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 600;
-  border: 1px solid var(--border-color);
-  transition: var(--transition-fast);
-}
-
-.nav-admin-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--border-color-hover);
-}
-
-/* Hero Section */
-.hero-section {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  padding-top: 120px;
-  padding-bottom: 80px;
-}
-
-.hero-container {
-  display: flex;
-  align-items: center;
-}
-
-.hero-content {
-  max-width: 700px;
-}
-
-.hero-badge {
-  margin-bottom: 24px;
-  padding: 6px 16px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.hero-title {
-  font-size: 54px;
-  line-height: 1.15;
-  font-weight: 800;
-  margin-bottom: 24px;
-}
-
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 40px;
-  }
-}
-
-.hero-description {
-  color: var(--text-secondary);
-  font-size: 18px;
-  line-height: 1.6;
-  margin-bottom: 40px;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-/* Section Header */
-.section-header {
-  text-align: center;
-  margin-bottom: 60px;
-}
-
-.section-title {
-  font-size: 36px;
-  font-weight: 800;
-  margin-bottom: 12px;
-}
-
-.section-subtitle {
-  color: var(--text-secondary);
-  font-size: 16px;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-/* Skills Section */
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 24px;
-}
-
-.skill-category-card {
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.category-title {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 12px;
-}
-
-.tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.empty-text {
-  color: var(--text-muted);
-  font-size: 14px;
-  font-style: italic;
-}
-
-/* Projects Section */
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 32px;
-}
-
-/* Footer */
-.footer {
-  margin-top: auto;
-  border-top: 1px solid var(--border-color);
-  padding: 30px 0;
-  background: rgba(15, 23, 42, 0.4);
-}
-
-.footer-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.copyright {
-  color: var(--text-secondary);
-  font-size: 14px;
-}
-
-.footer-links {
-  display: flex;
-  gap: 24px;
-}
-</style>

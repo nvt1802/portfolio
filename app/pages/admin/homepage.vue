@@ -114,31 +114,31 @@ const saveSettings = async () => {
 <template>
   <div>
     <!-- Admin Header -->
-    <div class="admin-header" style="margin-bottom: 16px;">
+    <div class="mb-4">
       <div>
-        <h1 style="font-size: 28px;">Cấu Hình Trang Chủ</h1>
-        <p style="color: var(--text-secondary); margin-top: 4px;">Sắp xếp thứ tự và ẩn/hiện các phân vùng (sections) trên trang chủ</p>
+        <h1 class="text-[28px] font-bold">Cấu Hình Trang Chủ</h1>
+        <p class="text-[color:var(--text-secondary)] mt-1">Sắp xếp thứ tự và ẩn/hiện các phân vùng (sections) trên trang chủ</p>
       </div>
     </div>
 
     <!-- Breadcrumbs -->
-    <Breadcrumbs :items="[{ name: 'Cấu hình Trang chủ' }]" style="margin-bottom: 24px;" />
+    <Breadcrumbs :items="[{ name: 'Cấu hình Trang chủ' }]" class="mb-6" />
 
-    <div v-if="isLoading" style="color: var(--text-secondary);">
+    <div v-if="isLoading" class="text-[color:var(--text-secondary)]">
       Đang tải cấu hình...
     </div>
 
-    <div v-else class="glass-card" style="padding: 32px;">
+    <div v-else class="glass-card p-8">
       
       <!-- Hero Settings -->
-      <h3 style="margin-bottom: 24px; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Cấu hình khối Giới thiệu (Hero)</h3>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+      <h3 class="mb-6 text-[color:var(--text-primary)] border-b border-[color:var(--border-color)] pb-3 font-bold text-lg">Cấu hình khối Giới thiệu (Hero)</h3>
+      <div class="grid grid-cols-2 gap-4 mb-4">
         <div class="form-group">
           <label class="form-label">Dòng Badge (nhỏ)</label>
           <input v-model="heroSettings.badgeText" type="text" class="form-control" />
         </div>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+      <div class="grid grid-cols-2 gap-4 mb-4">
         <div class="form-group">
           <label class="form-label">Tiêu đề - Dòng 1</label>
           <input v-model="heroSettings.titleLine1" type="text" class="form-control" />
@@ -148,87 +148,83 @@ const saveSettings = async () => {
           <input v-model="heroSettings.titleLine2" type="text" class="form-control" />
         </div>
       </div>
-      <div class="form-group" style="margin-bottom: 40px;">
+      <div class="form-group mb-10">
         <label class="form-label">Đoạn mô tả ngắn</label>
         <textarea v-model="heroSettings.description" class="form-control" rows="3"></textarea>
       </div>
 
       <!-- Sections order -->
-      <h3 style="margin-bottom: 24px; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Sắp xếp hiển thị</h3>
+      <h3 class="mb-6 text-[color:var(--text-primary)] border-b border-[color:var(--border-color)] pb-3 font-bold text-lg">Sắp xếp hiển thị</h3>
       
-      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px;">
+      <div class="flex flex-col gap-3 mb-8">
         <div 
           v-for="(section, index) in sections" 
           :key="section.id"
-          style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"
+          class="flex items-center justify-between bg-black/20 p-4 rounded-md border border-[color:var(--border-color)]"
         >
-          <div style="display: flex; align-items: center; gap: 16px;">
+          <div class="flex items-center gap-4 w-full">
             <!-- Reorder buttons -->
-            <div style="display: flex; flex-direction: column; gap: 4px;">
+            <div class="flex flex-col gap-1">
               <button 
                 @click="moveUp(index)" 
                 :disabled="index === 0"
-                style="background: none; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center;"
-                :style="{ opacity: index === 0 ? '0.3' : '1' }"
+                class="bg-transparent border-none text-[color:var(--text-secondary)] cursor-pointer flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:text-white"
                 title="Lên trên"
               >
-                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
                 </svg>
               </button>
               <button 
                 @click="moveDown(index)" 
                 :disabled="index === sections.length - 1"
-                style="background: none; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center;"
-                :style="{ opacity: index === sections.length - 1 ? '0.3' : '1' }"
+                class="bg-transparent border-none text-[color:var(--text-secondary)] cursor-pointer flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:text-white"
                 title="Xuống dưới"
               >
-                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
               </button>
             </div>
-            <div style="display: flex; flex-direction: column; flex: 1; margin-left: 12px; gap: 8px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-weight: 600; color: var(--text-secondary);">{{ index + 1 }}.</span>
+            <div class="flex flex-col flex-1 ml-3 gap-2">
+              <div class="flex items-center gap-2">
+                <span class="font-semibold text-[color:var(--text-secondary)]">{{ index + 1 }}.</span>
                 <input 
                   v-if="section.id !== 'hero'"
                   v-model="section.name" 
                   type="text" 
-                  class="form-control"
-                  style="max-width: 300px; padding: 6px 12px; font-weight: 600; font-size: 15px;"
+                  class="form-control max-w-[300px] px-3 py-1.5 font-semibold text-[15px]"
                   placeholder="Tiêu đề chính"
                 />
-                <span v-else style="font-weight: 600; color: var(--text-primary); font-size: 16px;">
+                <span v-else class="font-semibold text-[color:var(--text-primary)] text-[16px]">
                   {{ section.name }}
                 </span>
               </div>
-              <div v-if="section.id !== 'hero'" style="display: flex; align-items: center; gap: 8px; margin-left: 20px;">
+              <div v-if="section.id !== 'hero'" class="flex items-center gap-2 ml-5">
                 <input 
                   v-model="section.subtitle" 
                   type="text" 
-                  class="form-control"
-                  style="width: 100%; max-width: 500px; padding: 6px 12px; font-size: 14px; color: var(--text-secondary);"
+                  class="form-control w-full max-w-[500px] px-3 py-1.5 text-[14px] text-[color:var(--text-secondary)]"
                   placeholder="Phụ đề (Subtitle)"
                 />
               </div>
             </div>
           </div>
 
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-              <span style="color: var(--text-secondary); font-size: 14px;">{{ section.visible ? 'Hiển thị' : 'Đang ẩn' }}</span>
+          <div class="flex items-center gap-2 shrink-0 ml-4">
+            <label class="cursor-pointer flex items-center gap-2">
+              <span class="text-[color:var(--text-secondary)] text-[14px]">{{ section.visible ? 'Hiển thị' : 'Đang ẩn' }}</span>
               <input 
                 type="checkbox" 
                 v-model="section.visible"
-                style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;"
+                class="w-[18px] h-[18px] accent-[color:var(--accent)] cursor-pointer"
               />
             </label>
           </div>
         </div>
       </div>
 
-      <button @click="saveSettings" class="btn btn-primary" :disabled="isSaving" style="padding: 12px 24px; font-size: 15px;">
+      <button @click="saveSettings" class="btn btn-primary px-6 py-3 text-[15px] disabled:opacity-50 disabled:cursor-not-allowed" :disabled="isSaving">
         {{ isSaving ? 'Đang lưu...' : 'Lưu Thay Đổi' }}
       </button>
     </div>
@@ -239,9 +235,3 @@ const saveSettings = async () => {
     </div>
   </div>
 </template>
-
-<style scoped>
-button:disabled {
-  cursor: not-allowed !important;
-}
-</style>

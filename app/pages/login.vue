@@ -63,20 +63,20 @@ const handleGoogleLogin = async () => {
 </script>
 
 <template>
-  <div class="login-wrapper">
+  <div class="min-h-screen flex items-center justify-center p-6">
     <!-- Glow Backdrop Effects -->
-    <div class="glow-backdrop">
-      <div class="glow-orb-1"></div>
-      <div class="glow-orb-2"></div>
+    <div class="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+      <div class="absolute top-[-10%] right-[-5%] w-[40vw] h-[40vw] max-w-[600px] max-h-[600px] rounded-full bg-[color:var(--primary)] opacity-[0.15] blur-[100px] animate-[pulse_8s_ease-in-out_infinite_alternate]"></div>
+      <div class="absolute bottom-[-10%] left-[-5%] w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] rounded-full bg-[color:var(--accent)] opacity-[0.1] blur-[120px] animate-[pulse_10s_ease-in-out_infinite_alternate-reverse]"></div>
     </div>
     
-    <div class="login-container">
-      <div class="glass-card login-card">
-        <h2 class="login-title gradient-text">PORTFOLIO ADMIN</h2>
-        <p class="login-subtitle">Login to manage your content</p>
+    <div class="w-full max-w-[440px]">
+      <div class="glass-card p-10 text-center shadow-[0_20px_50px_-15px_rgba(0,0,0,0.7)]">
+        <h2 class="text-[26px] font-extrabold mb-2 gradient-text">PORTFOLIO ADMIN</h2>
+        <p class="text-[color:var(--text-secondary)] text-[14px] mb-8">Login to manage your content</p>
         
-        <form @submit.prevent="handleLogin" class="login-form">
-          <div v-if="errorMessage" class="error-banner">
+        <form @submit.prevent="handleLogin" class="text-left">
+          <div v-if="errorMessage" class="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-md text-[14px] mb-5 text-left">
             {{ errorMessage }}
           </div>
           
@@ -106,16 +106,16 @@ const handleGoogleLogin = async () => {
             />
           </div>
           
-          <button type="submit" class="btn btn-primary login-btn" :disabled="isSubmitting">
+          <button type="submit" class="btn btn-primary w-full mt-2" :disabled="isSubmitting">
             <span v-if="isSubmitting">Logging in...</span>
             <span v-else>Login</span>
           </button>
         </form>
         
-        <div class="divider">Or</div>
+        <div class="flex items-center text-center text-[color:var(--text-muted)] text-[13px] my-6 before:content-[''] before:flex-1 before:border-b before:border-[color:var(--border-color)] before:mr-2 after:content-[''] after:flex-1 after:border-b after:border-[color:var(--border-color)] after:ml-2">Or</div>
         
-        <button @click="handleGoogleLogin" class="btn btn-secondary google-btn" :disabled="isSubmitting">
-          <svg style="width:18px;height:18px;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <button @click="handleGoogleLogin" class="btn btn-secondary w-full flex items-center justify-center gap-3" :disabled="isSubmitting">
+          <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
@@ -127,88 +127,3 @@ const handleGoogleLogin = async () => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.login-wrapper {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-
-.login-container {
-  width: 100%;
-  max-width: 440px;
-}
-
-.login-card {
-  padding: 40px;
-  text-align: center;
-  box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.7);
-}
-
-.login-title {
-  font-size: 26px;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
-
-.login-subtitle {
-  color: var(--text-secondary);
-  font-size: 14px;
-  margin-bottom: 32px;
-}
-
-.login-form {
-  text-align: left;
-}
-
-.login-btn {
-  width: 100%;
-  margin-top: 8px;
-}
-
-.error-banner {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #f87171;
-  padding: 12px 16px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  margin-bottom: 20px;
-  text-align: left;
-}
-
-.divider {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 13px;
-  margin: 24px 0;
-}
-
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.divider:not(:empty)::before {
-  margin-right: .5em;
-}
-
-.divider:not(:empty)::after {
-  margin-left: .5em;
-}
-
-.google-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-</style>

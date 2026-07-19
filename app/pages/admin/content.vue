@@ -233,15 +233,15 @@ const savePersonalInfo = async () => {
 <template>
   <div>
     <!-- Header -->
-    <div class="admin-header" style="margin-bottom: 16px;">
+    <div class="mb-4">
       <div>
-        <h1 style="font-size: 28px;">Bảng Điều Khiển Quản Trị</h1>
-        <p style="color: var(--text-secondary); margin-top: 4px;">Quản lý dữ liệu hiển thị trên Portfolio cá nhân của bạn</p>
+        <h1 class="text-[28px] font-bold">Bảng Điều Khiển Quản Trị</h1>
+        <p class="text-[color:var(--text-secondary)] mt-1">Quản lý dữ liệu hiển thị trên Portfolio cá nhân của bạn</p>
       </div>
     </div>
 
     <!-- Breadcrumbs -->
-    <Breadcrumbs :items="[{ name: currentTabName }]" />
+    <Breadcrumbs :items="[{ name: currentTabName }]" class="mb-6" />
 
     <!-- Tabs Menu -->
     <div class="tabs-container">
@@ -261,13 +261,13 @@ const savePersonalInfo = async () => {
       
       <!-- ==================== TAB: PERSONAL ==================== -->
       <div v-if="activeTab === 'personal'">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <h3 style="font-size: 20px;">Quản lý Thông tin Cá nhân</h3>
+        <div class="flex justify-between items-center mb-5">
+          <h3 class="text-[20px] font-bold">Quản lý Thông tin Cá nhân</h3>
         </div>
 
-        <div class="glass-card" style="padding: 24px;">
+        <div class="glass-card p-6">
           <form @submit.prevent="savePersonalInfo">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div class="form-group">
                 <label class="form-label">Họ và Tên</label>
                 <input v-model="personalForm.fullName" type="text" class="form-control" placeholder="VD: Nguyễn Văn A" />
@@ -302,7 +302,7 @@ const savePersonalInfo = async () => {
               </div>
             </div>
             
-            <div class="form-group" style="margin-bottom: 32px;">
+            <div class="form-group mb-8">
               <label class="form-label">Tóm tắt bản thân (Summary)</label>
               <textarea v-model="personalForm.summary" class="form-control" rows="4" placeholder="Viết một đoạn giới thiệu ngắn về bản thân..."></textarea>
             </div>
@@ -316,14 +316,14 @@ const savePersonalInfo = async () => {
 
       <!-- ==================== TAB: COMPANIES ==================== -->
       <div v-if="activeTab === 'companies'">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <h3 style="font-size: 20px;">Quản lý Công ty</h3>
-          <NuxtLink to="/admin/companies/new" class="btn btn-primary" style="text-decoration: none;">
+        <div class="flex justify-between items-center mb-5">
+          <h3 class="text-[20px] font-bold">Quản lý Công ty</h3>
+          <NuxtLink to="/admin/companies/new" class="btn btn-primary no-underline">
             + Thêm công ty
           </NuxtLink>
         </div>
 
-        <div class="glass-card" style="padding: 0; overflow-x: auto;">
+        <div class="glass-card p-0 overflow-x-auto">
           <table class="admin-table">
             <thead>
               <tr>
@@ -334,26 +334,27 @@ const savePersonalInfo = async () => {
             </thead>
             <tbody>
               <tr v-for="comp in companies" :key="comp.id">
-                <td style="width: 80px;">
-                  <div :style="{ backgroundColor: comp.logoBg || '#ffffff' }" style="width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 4px; border: 1px solid var(--border-color); overflow: hidden;">
-                    <img v-if="comp.logoUrl" :src="comp.logoUrl" :style="{ transform: `scale(${comp.logoScale ?? 1}) translate(${comp.logoX ?? 0}px, ${comp.logoY ?? 0}px)` }" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
-                    <span v-else style="color: #1e293b; font-weight: 800; font-size: 18px;">{{ comp.name?.charAt(0) || '?' }}</span>
+                <td class="w-[80px]">
+                  <div :style="{ backgroundColor: comp.logoBg || '#ffffff' }" class="w-[50px] h-[50px] rounded-lg flex items-center justify-center p-1 border border-[color:var(--border-color)] overflow-hidden">
+                    <img v-if="comp.logoUrl" :src="comp.logoUrl" :style="{ transform: `scale(${comp.logoScale ?? 1}) translate(${comp.logoX ?? 0}px, ${comp.logoY ?? 0}px)` }" class="max-w-full max-h-full object-contain" />
+                    <span v-else class="text-slate-800 font-extrabold text-[18px]">{{ comp.name?.charAt(0) || '?' }}</span>
                   </div>
                 </td>
-                <td style="font-weight:600;">{{ comp.name }}</td>
+                <td class="font-semibold">{{ comp.name }}</td>
                 <td class="actions-cell">
                   <div class="actions-wrapper">
-                    <NuxtLink :to="`/admin/companies/${comp.id}`" class="action-icon-btn edit-btn" title="Chỉnh sửa">
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <NuxtLink :to="`/admin/companies/${comp.id}`" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-white/5 bg-black/20 cursor-pointer transition-all duration-200 text-[color:var(--text-secondary)] hover:bg-blue-500/15 hover:border-blue-500/30 hover:text-blue-500 hover:-translate-y-0.5" title="Chỉnh sửa">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     </NuxtLink>
-                    <button @click="deleteCompany(comp.id)" class="action-icon-btn delete-btn" title="Xóa">
+                    <button @click="deleteCompany(comp.id)" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-white/5 bg-black/20 cursor-pointer transition-all duration-200 text-[color:var(--text-secondary)] hover:bg-red-500/15 hover:border-red-500/30 hover:text-red-500 hover:-translate-y-0.5" title="Xóa">
+
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                   </div>
                 </td>
               </tr>
               <tr v-if="companies && companies.length === 0">
-                <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 40px;">Chưa có dữ liệu công ty.</td>
+                <td colspan="3" class="text-center text-[color:var(--text-muted)] p-10">Chưa có dữ liệu công ty.</td>
               </tr>
             </tbody>
           </table>
@@ -362,14 +363,14 @@ const savePersonalInfo = async () => {
 
       <!-- ==================== TAB: EXPERIENCES ==================== -->
       <div v-if="activeTab === 'experiences'">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <h3 style="font-size: 20px;">Lộ trình làm việc</h3>
-          <NuxtLink to="/admin/experiences/new" class="btn btn-primary" style="text-decoration: none;">
+        <div class="flex justify-between items-center mb-5">
+          <h3 class="text-[20px] font-bold">Lộ trình làm việc</h3>
+          <NuxtLink to="/admin/experiences/new" class="btn btn-primary no-underline">
             + Thêm kinh nghiệm
           </NuxtLink>
         </div>
 
-        <div class="glass-card" style="padding: 0; overflow-x: auto;">
+        <div class="glass-card p-0 overflow-x-auto">
           <table class="admin-table">
             <thead>
               <tr>
@@ -384,30 +385,30 @@ const savePersonalInfo = async () => {
             </thead>
             <tbody>
               <tr v-for="exp in experiences" :key="exp.id">
-                <td style="width: 80px;">
-                  <div :style="{ backgroundColor: getCompanyById(exp.companyId)?.logoBg || exp.logoBg || '#ffffff' }" style="width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 4px; border: 1px solid var(--border-color); overflow: hidden;">
-                    <img v-if="getCompanyById(exp.companyId)?.logoUrl || exp.logoUrl" :src="getCompanyById(exp.companyId)?.logoUrl || exp.logoUrl" :style="{ transform: `scale(${getCompanyById(exp.companyId)?.logoScale ?? exp.logoScale ?? 1}) translate(${getCompanyById(exp.companyId)?.logoX ?? exp.logoX ?? 0}px, ${getCompanyById(exp.companyId)?.logoY ?? exp.logoY ?? 0}px)` }" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
-                    <span v-else style="color: #1e293b; font-weight: 800; font-size: 18px;">{{ (getCompanyById(exp.companyId)?.name || exp.company || '?').charAt(0) }}</span>
+                <td class="w-[80px]">
+                  <div :style="{ backgroundColor: getCompanyById(exp.companyId)?.logoBg || exp.logoBg || '#ffffff' }" class="w-[50px] h-[50px] rounded-lg flex items-center justify-center p-1 border border-[color:var(--border-color)] overflow-hidden">
+                    <img v-if="getCompanyById(exp.companyId)?.logoUrl || exp.logoUrl" :src="getCompanyById(exp.companyId)?.logoUrl || exp.logoUrl" :style="{ transform: `scale(${getCompanyById(exp.companyId)?.logoScale ?? exp.logoScale ?? 1}) translate(${getCompanyById(exp.companyId)?.logoX ?? exp.logoX ?? 0}px, ${getCompanyById(exp.companyId)?.logoY ?? exp.logoY ?? 0}px)` }" class="max-w-full max-h-full object-contain" />
+                    <span v-else class="text-slate-800 font-extrabold text-[18px]">{{ (getCompanyById(exp.companyId)?.name || exp.company || '?').charAt(0) }}</span>
                   </div>
                 </td>
-                <td style="font-weight:600;">{{ getCompanyById(exp.companyId)?.name || exp.company }}</td>
+                <td class="font-semibold">{{ getCompanyById(exp.companyId)?.name || exp.company }}</td>
                 <td>{{ exp.role }}</td>
                 <td>{{ exp.startDate }}</td>
                 <td>{{ exp.endDate }}</td>
                 <td>{{ exp.order }}</td>
                 <td class="actions-cell">
                   <div class="actions-wrapper">
-                    <NuxtLink :to="`/admin/experiences/${exp.id}`" class="action-icon-btn edit-btn" title="Chỉnh sửa">
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <NuxtLink :to="`/admin/experiences/${exp.id}`" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-white/5 bg-black/20 cursor-pointer transition-all duration-200 text-[color:var(--text-secondary)] hover:bg-blue-500/15 hover:border-blue-500/30 hover:text-blue-500 hover:-translate-y-0.5" title="Chỉnh sửa">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     </NuxtLink>
-                    <button @click="deleteExperience(exp.id)" class="action-icon-btn delete-btn" title="Xóa">
+                    <button @click="deleteExperience(exp.id)" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-white/5 bg-black/20 cursor-pointer transition-all duration-200 text-[color:var(--text-secondary)] hover:bg-red-500/15 hover:border-red-500/30 hover:text-red-500 hover:-translate-y-0.5" title="Xóa">
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                   </div>
                 </td>
               </tr>
               <tr v-if="experiences && experiences.length === 0">
-                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">Chưa có dữ liệu kinh nghiệm.</td>
+                <td colspan="7" class="text-center text-[color:var(--text-muted)] p-10">Chưa có dữ liệu kinh nghiệm.</td>
               </tr>
             </tbody>
           </table>
@@ -416,14 +417,14 @@ const savePersonalInfo = async () => {
 
       <!-- ==================== TAB: PROJECTS ==================== -->
       <div v-if="activeTab === 'projects'">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <h3 style="font-size: 20px;">Dự án nổi bật</h3>
-          <NuxtLink to="/admin/projects/new" class="btn btn-primary" style="text-decoration: none;">
+        <div class="flex justify-between items-center mb-5">
+          <h3 class="text-[20px] font-bold">Dự án nổi bật</h3>
+          <NuxtLink to="/admin/projects/new" class="btn btn-primary no-underline">
             + Thêm dự án
           </NuxtLink>
         </div>
 
-        <div class="glass-card" style="padding: 0; overflow-x: auto;">
+        <div class="glass-card p-0 overflow-x-auto">
           <table class="admin-table">
             <thead>
               <tr>
@@ -438,38 +439,38 @@ const savePersonalInfo = async () => {
             </thead>
             <tbody>
               <tr v-for="proj in projects" :key="proj.id">
-                <td style="width: 80px;">
-                  <img v-if="proj.imageUrl" :src="proj.imageUrl" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color);" />
-                  <span v-else style="color: var(--text-muted); font-size: 12px;">No Image</span>
+                <td class="w-[80px]">
+                  <img v-if="proj.imageUrl" :src="proj.imageUrl" class="w-[60px] h-[40px] object-cover rounded border border-[color:var(--border-color)]" />
+                  <span v-else class="text-[color:var(--text-muted)] text-[12px]">No Image</span>
                 </td>
-                <td style="font-weight:600;">{{ proj.title }}</td>
-                <td style="color: var(--text-secondary); font-size: 14px; white-space: nowrap;">
+                <td class="font-semibold">{{ proj.title }}</td>
+                <td class="text-[color:var(--text-secondary)] text-[14px] whitespace-nowrap">
                   <span v-if="proj.startDate || proj.endDate">{{ proj.startDate }}<span v-if="proj.endDate"> - {{ proj.endDate }}</span></span>
                   <span v-else>-</span>
                 </td>
-                <td style="color: var(--accent);">{{ proj.companyId ? getCompanyById(proj.companyId)?.name : 'Cá nhân' }}</td>
+                <td class="text-[color:var(--accent)]">{{ proj.companyId ? getCompanyById(proj.companyId)?.name : 'Cá nhân' }}</td>
                 <td>
-                  <span v-for="tech in proj.techStack" :key="tech" class="badge" style="margin-right: 4px; margin-bottom: 2px;">{{ tech }}</span>
+                  <span v-for="tech in proj.techStack" :key="tech" class="badge mr-1 mb-0.5">{{ tech }}</span>
                 </td>
                 <td>
-                  <div style="display:flex; gap: 8px;">
-                    <a v-if="proj.demoLink" :href="proj.demoLink" target="_blank" style="color: var(--accent); font-size: 13px;">Demo</a>
-                    <a v-if="proj.githubLink" :href="proj.githubLink" target="_blank" style="color: var(--text-secondary); font-size: 13px;">GitHub</a>
+                  <div class="flex gap-2">
+                    <a v-if="proj.demoLink" :href="proj.demoLink" target="_blank" class="text-[color:var(--accent)] text-[13px]">Demo</a>
+                    <a v-if="proj.githubLink" :href="proj.githubLink" target="_blank" class="text-[color:var(--text-secondary)] text-[13px]">GitHub</a>
                   </div>
                 </td>
                 <td class="actions-cell">
                   <div class="actions-wrapper">
-                    <NuxtLink :to="`/admin/projects/${proj.id}`" class="action-icon-btn edit-btn" title="Chỉnh sửa">
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <NuxtLink :to="`/admin/projects/${proj.id}`" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-white/5 bg-black/20 cursor-pointer transition-all duration-200 text-[color:var(--text-secondary)] hover:bg-blue-500/15 hover:border-blue-500/30 hover:text-blue-500 hover:-translate-y-0.5" title="Chỉnh sửa">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     </NuxtLink>
-                    <button @click="deleteProject(proj.id)" class="action-icon-btn delete-btn" title="Xóa">
+                    <button @click="deleteProject(proj.id)" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-white/5 bg-black/20 cursor-pointer transition-all duration-200 text-[color:var(--text-secondary)] hover:bg-red-500/15 hover:border-red-500/30 hover:text-red-500 hover:-translate-y-0.5" title="Xóa">
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                   </div>
                 </td>
               </tr>
               <tr v-if="projects && projects.length === 0">
-                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">Chưa có dữ liệu dự án.</td>
+                <td colspan="7" class="text-center text-[color:var(--text-muted)] p-10">Chưa có dữ liệu dự án.</td>
               </tr>
             </tbody>
           </table>
@@ -478,14 +479,14 @@ const savePersonalInfo = async () => {
 
       <!-- ==================== TAB: SKILLS ==================== -->
       <div v-if="activeTab === 'skills'">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <h3 style="font-size: 20px;">Kỹ năng chuyên môn</h3>
-          <NuxtLink to="/admin/skills/new" class="btn btn-primary" style="text-decoration: none;">
+        <div class="flex justify-between items-center mb-5">
+          <h3 class="text-[20px] font-bold">Kỹ năng chuyên môn</h3>
+          <NuxtLink to="/admin/skills/new" class="btn btn-primary no-underline">
             + Thêm kỹ năng
           </NuxtLink>
         </div>
 
-        <div class="glass-card" style="padding: 0; overflow-x: auto;">
+        <div class="glass-card p-0 overflow-x-auto">
           <table class="admin-table">
             <thead>
               <tr>
@@ -499,14 +500,14 @@ const savePersonalInfo = async () => {
             </thead>
             <tbody>
               <tr v-for="skill in skills" :key="skill.id">
-                <td style="width: 80px;">
-                  <div v-if="skill.displayType !== 'text'" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; padding: 6px; border: 1px solid var(--border-color); overflow: hidden;">
-                    <img v-if="skill.iconUrl" :src="skill.iconUrl" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
-                    <span v-else style="color: var(--primary); font-weight: 800; font-size: 14px;">{{ skill.name.charAt(0) }}</span>
+                <td class="w-[80px]">
+                  <div v-if="skill.displayType !== 'text'" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center p-1.5 border border-[color:var(--border-color)] overflow-hidden">
+                    <img v-if="skill.iconUrl" :src="skill.iconUrl" class="max-w-full max-h-full object-contain" />
+                    <span v-else class="text-[color:var(--primary)] font-extrabold text-[14px]">{{ skill.name.charAt(0) }}</span>
                   </div>
-                  <div v-else style="color: var(--text-secondary); font-size: 12px; font-style: italic;">Văn bản</div>
+                  <div v-else class="text-[color:var(--text-secondary)] text-[12px] italic">Văn bản</div>
                 </td>
-                <td style="font-weight:600;">{{ skill.name }}</td>
+                <td class="font-semibold">{{ skill.name }}</td>
                 <td>
                   <span class="badge" :class="skill.category === 'frontend' || skill.category === 'ai-automation' ? 'badge-primary' : 'badge-accent'">
                     {{ categoriesMap[skill.category] }}
@@ -520,17 +521,17 @@ const savePersonalInfo = async () => {
                 <td>{{ skill.order }}</td>
                 <td class="actions-cell">
                   <div class="actions-wrapper">
-                    <NuxtLink :to="`/admin/skills/${skill.id}`" class="action-icon-btn edit-btn" title="Chỉnh sửa">
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <NuxtLink :to="`/admin/skills/${skill.id}`" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-white/5 bg-black/20 cursor-pointer transition-all duration-200 text-[color:var(--text-secondary)] hover:bg-blue-500/15 hover:border-blue-500/30 hover:text-blue-500 hover:-translate-y-0.5" title="Chỉnh sửa">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     </NuxtLink>
-                    <button @click="deleteSkill(skill.id)" class="action-icon-btn delete-btn" title="Xóa">
+                    <button @click="deleteSkill(skill.id)" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-white/5 bg-black/20 cursor-pointer transition-all duration-200 text-[color:var(--text-secondary)] hover:bg-red-500/15 hover:border-red-500/30 hover:text-red-500 hover:-translate-y-0.5" title="Xóa">
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                   </div>
                 </td>
               </tr>
               <tr v-if="skills && skills.length === 0">
-                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">Chưa có kỹ năng nào.</td>
+                <td colspan="6" class="text-center text-[color:var(--text-muted)] p-10">Chưa có kỹ năng nào.</td>
               </tr>
             </tbody>
           </table>
@@ -540,22 +541,22 @@ const savePersonalInfo = async () => {
 
     </div>
 
-    <!-- Custom Confirm Dialog -->
-    <div v-if="isConfirmOpen" class="modal-overlay" style="z-index: 2000;">
-      <div class="modal-content" style="max-width: 440px; padding: 28px; text-align: center; border-color: rgba(239, 68, 68, 0.2); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 40px rgba(239, 68, 68, 0.05);">
-        <div style="margin-bottom: 20px;">
+      <!-- Custom Confirm Dialog -->
+    <div v-if="isConfirmOpen" class="fixed inset-0 bg-black/50 z-[2000] flex items-center justify-center backdrop-blur-[2px]">
+      <div class="glass-card max-w-[440px] p-7 text-center border-red-500/20 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6),0_0_40px_rgba(239,68,68,0.05)] w-[90%]">
+        <div class="mb-5">
           <!-- Sleek Warning Icon -->
-          <div style="width: 56px; height: 56px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
-            <svg style="width: 28px; height: 28px; color: #ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <div class="w-14 h-14 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center mx-auto">
+            <svg class="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
             </svg>
           </div>
         </div>
-        <h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Xác nhận xóa</h3>
-        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 24px; text-align: center;">{{ confirmMessage }}</p>
-        <div style="display: flex; gap: 12px; justify-content: center;">
-          <button @click="handleConfirmNo" class="btn btn-secondary" style="flex: 1; padding: 10px 16px;">Hủy bỏ</button>
-          <button @click="handleConfirmYes" class="btn btn-primary" style="flex: 1; padding: 10px 16px; background: #ef4444; border-color: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);">Xác nhận</button>
+        <h3 class="text-[18px] font-bold text-[color:var(--text-primary)] mb-2">Xác nhận xóa</h3>
+        <p class="text-[14px] text-[color:var(--text-secondary)] leading-[1.5] mb-6 text-center">{{ confirmMessage }}</p>
+        <div class="flex gap-3 justify-center">
+          <button @click="handleConfirmNo" class="btn btn-secondary flex-1 px-4 py-2.5">Hủy bỏ</button>
+          <button @click="handleConfirmYes" class="btn btn-primary flex-1 px-4 py-2.5 bg-red-500 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:bg-red-600 hover:border-red-600">Xác nhận</button>
         </div>
       </div>
     </div>
@@ -567,38 +568,3 @@ const savePersonalInfo = async () => {
 
   </div>
 </template>
-
-<style scoped>
-.action-icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.05);
-  background: rgba(0,0,0,0.2);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--text-secondary);
-}
-
-.action-icon-btn svg {
-  width: 16px;
-  height: 16px;
-}
-
-.action-icon-btn.edit-btn:hover {
-  background: rgba(59, 130, 246, 0.15);
-  border-color: rgba(59, 130, 246, 0.3);
-  color: #3b82f6;
-  transform: translateY(-2px);
-}
-
-.action-icon-btn.delete-btn:hover {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #ef4444;
-  transform: translateY(-2px);
-}
-</style>

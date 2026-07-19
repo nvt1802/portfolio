@@ -5,7 +5,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     'nuxt-vuefire',
-    '@nuxt/image'
+    '@nuxt/image',
+    '@nuxtjs/tailwindcss'
   ],
   vuefire: {
     config: {
