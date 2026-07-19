@@ -49,17 +49,42 @@ defineProps<{
 
       <!-- Projects -->
       <section v-if="filteredProjects.length > 0" class="mb-8">
-        <h3 class="text-[14px] font-semibold tracking-[2px] uppercase m-0 mb-4 pb-1">Projects</h3>
+        <h3 class="text-[14px] font-semibold tracking-[2px] uppercase m-0 mb-5 pb-1 border-b border-gray-200">Projects</h3>
         
-        <div v-for="proj in filteredProjects" :key="proj.id" class="mb-5">
-          <div class="flex items-baseline gap-3 mb-1">
-            <span class="font-semibold text-[14px]">{{ proj.title }}</span>
-            <a v-if="proj.link" :href="proj.link" target="_blank" class="text-[12px] text-[#666] underline">{{ proj.link.replace(/^https?:\/\//, '') }}</a>
+        <div class="space-y-6">
+          <div v-for="proj in filteredProjects" :key="proj.id" class="group">
+            <div class="flex justify-between items-start mb-1.5 flex-col sm:flex-row gap-1 sm:gap-4">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-bold text-[14px] text-black">{{ proj.title }}</span>
+                <span v-if="proj.role" class="text-[13px] text-[#666] hidden sm:inline">|</span>
+                <span v-if="proj.role" class="text-[13px] text-[#444] font-medium">{{ proj.role }}</span>
+              </div>
+              <div v-if="proj.startDate" class="text-[12px] text-[#777] shrink-0 mt-0.5 sm:mt-0">{{ proj.startDate }} - {{ proj.endDate || 'Present' }}</div>
+            </div>
+            
+            <div class="flex flex-wrap gap-x-4 gap-y-1 mb-2 items-center">
+              <div v-if="proj.client || proj.teamSize || proj.companyName" class="text-[12px] text-[#555] flex flex-wrap gap-3">
+                 <span v-if="proj.companyName"><strong>Company:</strong> {{ proj.companyName }}</span>
+                 <span v-if="proj.client"><strong>Client:</strong> {{ proj.client }}</span>
+                 <span v-if="proj.teamSize"><strong>Team:</strong> {{ proj.teamSize }}</span>
+              </div>
+              <div v-if="proj.demoLink || proj.githubLink" class="flex gap-3 text-[11px] text-[#666]">
+                <a v-if="proj.demoLink" :href="proj.demoLink" target="_blank" class="underline hover:text-black">Demo</a>
+                <a v-if="proj.githubLink" :href="proj.githubLink" target="_blank" class="underline hover:text-black">GitHub</a>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mb-2 text-[12px] text-[#666] [&>span:not(:last-child)]:after:content-[','] [&>span:not(:last-child)]:after:not-italic">
+              <span v-for="tech in proj.techStack" :key="tech" class="italic">{{ tech }}</span>
+            </div>
+            
+            <div class="text-[13px] text-[#333] leading-[1.6] [&>ul]:my-1.5 [&>ul]:pl-4 [&>ul>li]:mb-1" v-html="proj.description"></div>
+            
+            <div v-if="proj.workDone" class="text-[13px] text-[#333] leading-[1.6] mt-1.5 [&>ul]:my-1.5 [&>ul]:pl-4 [&>ul>li]:mb-1">
+              <span class="font-semibold block mb-0.5">Responsibilities & Achievements:</span>
+              <div v-html="proj.workDone"></div>
+            </div>
           </div>
-          <div class="flex flex-wrap gap-2 mb-1.5 text-[12px] text-[#666] [&>span:not(:last-child)]:after:content-[','] [&>span:not(:last-child)]:after:not-italic">
-            <span v-for="tech in proj.technologies" :key="tech" class="italic">{{ tech }}</span>
-          </div>
-          <div class="text-[13px] text-[#333]" v-html="proj.description"></div>
         </div>
       </section>
 

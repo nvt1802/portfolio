@@ -67,11 +67,23 @@ const filteredExperiences = computed(() => {
     })
 })
 
+const parseDateStr = (dateStr: string) => {
+  if (!dateStr || dateStr.toLowerCase() === 'present' || dateStr.toLowerCase() === 'hiện tại') return Date.now()
+  const parts = dateStr.split('/')
+  if (parts.length === 2) {
+    return new Date(Number(parts[1]), Number(parts[0]) - 1).getTime()
+  }
+  if (parts.length === 1 && parts[0].length === 4) {
+    return new Date(Number(parts[0]), 0).getTime()
+  }
+  return 0
+}
+
 const filteredProjects = computed(() => {
   if (!cvProfileRef.value || !cvProfileRef.value.selectedProjects) return []
   return projects.value
     .filter(p => cvProfileRef.value!.selectedProjects.includes(p.id))
-    .sort((a, b) => (b.order || 0) - (a.order || 0))
+    .sort((a, b) => parseDateStr(a.startDate || '') - parseDateStr(b.startDate || ''))
     .map(proj => {
       const comp = companies.value.find(c => c.id === proj.companyId)
       return {
