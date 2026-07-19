@@ -2,7 +2,7 @@
 import { doc, collection, getDocs } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
 
-useHead({ title: 'Hồ Sơ Năng Lực' })
+useHead({ title: 'CV Profile' })
 
 definePageMeta({
   layout: false, // No navigation bar, footer, etc.
@@ -11,8 +11,9 @@ definePageMeta({
 
 const db = useFirestore()
 
-// Fetch CV Profile
+// Fetch CV Profile & Personal Info
 const cvProfileRef = useDocument(doc(db, 'settings', 'cv_profile'))
+const personalInfo = useDocument(doc(db, 'settings', 'personal'))
 
 // State
 const experiences = ref<any[]>([])
@@ -72,7 +73,7 @@ const filteredProjects = computed(() => {
       const comp = companies.value.find(c => c.id === proj.companyId)
       return {
         ...proj,
-        companyName: comp ? comp.name : (proj.companyId ? '' : 'Dự án cá nhân')
+        companyName: comp ? comp.name : (proj.companyId ? '' : 'Personal Project')
       }
     })
 })
@@ -95,44 +96,53 @@ const printCv = () => {
     <div class="print-actions no-print">
       <button @click="printCv" class="print-btn">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-        In ra PDF
+        Print to PDF
       </button>
-      <NuxtLink to="/" class="back-link">Về Trang Chủ</NuxtLink>
+      <NuxtLink to="/" class="back-link">Back to Home</NuxtLink>
     </div>
 
     <!-- Loading State -->
     <div v-if="isLoading" class="loading-state no-print">
-      Đang tải dữ liệu CV...
+      Loading CV data...
     </div>
 
     <!-- CV Document -->
-    <div v-else-if="cvProfileRef" class="cv-document">
+    <div v-else-if="cvProfileRef && personalInfo" class="cv-document">
       
       <!-- Header / Personal Info -->
       <header class="cv-header">
-        <h1 class="cv-name">{{ cvProfileRef.fullName || 'Tên Của Bạn' }}</h1>
-        <h2 class="cv-title">{{ cvProfileRef.jobTitle || 'Chức danh' }}</h2>
-        
-        <div class="cv-contact">
-          <div v-if="cvProfileRef.email" class="contact-item">
-            <strong>Email:</strong> {{ cvProfileRef.email }}
+        <div class="cv-header-content" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 24px;">
+          <div class="cv-header-text">
+            <h1 class="cv-name">{{ personalInfo.fullName || 'Your Name' }}</h1>
+            <h2 class="cv-title">{{ personalInfo.jobTitle || 'Job Title' }}</h2>
+            
+            <div class="cv-contact">
+              <div v-if="personalInfo.email" class="contact-item">
+                <strong>Email:</strong> {{ personalInfo.email }}
+              </div>
+              <div v-if="personalInfo.phone" class="contact-item">
+                <strong>Phone:</strong> {{ personalInfo.phone }}
+              </div>
+              <div v-if="personalInfo.website" class="contact-item">
+                <strong>Web:</strong> <a :href="personalInfo.website" target="_blank">{{ personalInfo.website.replace(/^https?:\/\//, '') }}</a>
+              </div>
+              <div v-if="personalInfo.linkedin" class="contact-item">
+                <strong>LinkedIn:</strong> <a :href="'https://' + personalInfo.linkedin" target="_blank">{{ personalInfo.linkedin }}</a>
+              </div>
+              <div v-if="personalInfo.github" class="contact-item">
+                <strong>GitHub:</strong> <a :href="'https://' + personalInfo.github" target="_blank">{{ personalInfo.github }}</a>
+              </div>
+            </div>
           </div>
-          <div v-if="cvProfileRef.phone" class="contact-item">
-            <strong>Phone:</strong> {{ cvProfileRef.phone }}
-          </div>
-          <div v-if="cvProfileRef.website" class="contact-item">
-            <strong>Web:</strong> <a :href="cvProfileRef.website" target="_blank">{{ cvProfileRef.website.replace(/^https?:\/\//, '') }}</a>
-          </div>
-          <div v-if="cvProfileRef.linkedin" class="contact-item">
-            <strong>LinkedIn:</strong> <a :href="'https://' + cvProfileRef.linkedin" target="_blank">{{ cvProfileRef.linkedin }}</a>
-          </div>
-          <div v-if="cvProfileRef.github" class="contact-item">
-            <strong>GitHub:</strong> <a :href="'https://' + cvProfileRef.github" target="_blank">{{ cvProfileRef.github }}</a>
+          
+          <!-- Avatar (CV Avatar or Personal Avatar) -->
+          <div v-if="cvProfileRef.cvAvatarUrl || personalInfo.avatarUrl" class="cv-avatar" style="flex-shrink: 0;">
+            <img :src="cvProfileRef.cvAvatarUrl || personalInfo.avatarUrl" alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
           </div>
         </div>
 
-        <div v-if="cvProfileRef.summary" class="cv-summary">
-          <p>{{ cvProfileRef.summary }}</p>
+        <div v-if="personalInfo.summary" class="cv-summary" style="margin-top: 16px;">
+          <p>{{ personalInfo.summary }}</p>
         </div>
       </header>
 
@@ -141,16 +151,16 @@ const printCv = () => {
         
         <!-- Experience Section -->
         <section v-if="filteredExperiences.length > 0" class="cv-section">
-          <h3 class="section-title">Kinh Nghiệm Làm Việc</h3>
+          <h3 class="section-title">Work Experience</h3>
           <div class="section-content">
             <div v-for="exp in filteredExperiences" :key="exp.id" class="exp-item">
               <div class="exp-header">
                 <div class="exp-role-company">
                   <span class="exp-role">{{ exp.role }}</span>
                   <span class="separator">|</span>
-                  <span class="exp-company">{{ exp.company }} <span v-if="exp.projectName" style="font-weight: normal; margin-left: 4px;">— Dự án: {{ exp.projectName }}</span></span>
+                  <span class="exp-company">{{ exp.company }} <span v-if="exp.projectName" style="font-weight: normal; margin-left: 4px;">— Project: {{ exp.projectName }}</span></span>
                 </div>
-                <div class="exp-period">{{ exp.startDate || '' }} - {{ exp.endDate || 'Hiện tại' }}</div>
+                <div class="exp-period">{{ exp.startDate || '' }} - {{ exp.endDate || 'Present' }}</div>
               </div>
               <div class="exp-desc" v-html="exp.description"></div>
             </div>
@@ -159,7 +169,7 @@ const printCv = () => {
 
         <!-- Projects Section -->
         <section v-if="filteredProjects.length > 0" class="cv-section">
-          <h3 class="section-title">Dự Án Nổi Bật</h3>
+          <h3 class="section-title">Featured Projects</h3>
           <div class="section-content">
             <div v-for="proj in filteredProjects" :key="proj.id" class="proj-item">
               <div class="proj-header">
@@ -176,7 +186,7 @@ const printCv = () => {
 
         <!-- Skills Section -->
         <section v-if="filteredSkills.length > 0" class="cv-section">
-          <h3 class="section-title">Kỹ Năng Chuyên Môn</h3>
+          <h3 class="section-title">Professional Skills</h3>
           <div class="section-content skills-grid">
             <div v-for="skill in filteredSkills" :key="skill.id" class="skill-item">
               <span class="skill-name">{{ skill.name }}</span>
@@ -188,7 +198,7 @@ const printCv = () => {
     </div>
     
     <div v-else class="loading-state no-print">
-      Chưa có cấu hình CV. Vui lòng vào trang quản trị để tạo.
+      No CV configuration found. Please go to the admin panel to create one.
     </div>
 
   </div>

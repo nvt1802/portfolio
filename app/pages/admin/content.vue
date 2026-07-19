@@ -23,8 +23,9 @@ const showToast = (msg: string) => {
 }
 
 // --- Tabs Configuration ---
-const activeTab = ref<'companies' | 'experiences' | 'projects' | 'skills'>('companies')
+const activeTab = ref<'personal' | 'companies' | 'experiences' | 'projects' | 'skills'>('personal')
 const tabs = [
+  { id: 'personal', name: 'Cá nhân' },
   { id: 'companies', name: 'Công ty' },
   { id: 'experiences', name: 'Kinh nghiệm' },
   { id: 'projects', name: 'Dự án' },
@@ -33,12 +34,12 @@ const tabs = [
 
 // Watch query parameters to update active tab
 watch(() => route.query.tab, (newTab) => {
-  if (newTab && ['companies', 'experiences', 'projects', 'skills'].includes(newTab as string)) {
+  if (newTab && ['personal', 'companies', 'experiences', 'projects', 'skills'].includes(newTab as string)) {
     activeTab.value = newTab as any
   }
 }, { immediate: true })
 
-const changeTab = (tabId: 'companies' | 'experiences' | 'projects' | 'skills') => {
+const changeTab = (tabId: 'personal' | 'companies' | 'experiences' | 'projects' | 'skills') => {
   activeTab.value = tabId
   router.push({ query: { tab: tabId } })
 }
@@ -175,6 +176,56 @@ const currentTabName = computed(() => {
   return found ? found.name : ''
 })
 
+// ==========================================
+// 5. TAB: PERSONAL INFO
+// ==========================================
+const personalInfoRef = useDocument(computed(() => import.meta.client && db ? doc(db, 'settings', 'personal') : null))
+const isSavingPersonal = ref(false)
+
+const personalForm = ref({
+  fullName: '',
+  jobTitle: '',
+  avatarUrl: '',
+  email: '',
+  phone: '',
+  website: '',
+  github: '',
+  linkedin: '',
+  summary: ''
+})
+
+watch(personalInfoRef, (newProfile) => {
+  if (newProfile) {
+    personalForm.value = {
+      fullName: newProfile.fullName || '',
+      jobTitle: newProfile.jobTitle || '',
+      avatarUrl: newProfile.avatarUrl || '',
+      email: newProfile.email || '',
+      phone: newProfile.phone || '',
+      website: newProfile.website || '',
+      github: newProfile.github || '',
+      linkedin: newProfile.linkedin || '',
+      summary: newProfile.summary || ''
+    }
+  }
+}, { immediate: true })
+
+const savePersonalInfo = async () => {
+  isSavingPersonal.value = true
+  try {
+    await setDoc(doc(db, 'settings', 'personal'), {
+      ...personalForm.value,
+      updatedAt: new Date().toISOString()
+    })
+    showToast('Lưu thông tin cá nhân thành công!')
+  } catch (error: any) {
+    console.error(error)
+    showToast(`Lỗi khi lưu: ${error.message || error}`)
+  } finally {
+    isSavingPersonal.value = false
+  }
+}
+
 
 </script>
 
@@ -207,6 +258,60 @@ const currentTabName = computed(() => {
     <!-- TAB CONTENTS -->
     <div class="tab-content">
       
+      <!-- ==================== TAB: PERSONAL ==================== -->
+      <div v-if="activeTab === 'personal'">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3 style="font-size: 20px;">Quản lý Thông tin Cá nhân</h3>
+        </div>
+
+        <div class="glass-card" style="padding: 24px;">
+          <form @submit.prevent="savePersonalInfo">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+              <div class="form-group">
+                <label class="form-label">Họ và Tên</label>
+                <input v-model="personalForm.fullName" type="text" class="form-control" placeholder="VD: Nguyễn Văn A" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Chức danh (Job Title)</label>
+                <input v-model="personalForm.jobTitle" type="text" class="form-control" placeholder="VD: Frontend Developer" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Avatar URL</label>
+                <input v-model="personalForm.avatarUrl" type="text" class="form-control" placeholder="URL hình ảnh đại diện chung" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input v-model="personalForm.email" type="email" class="form-control" placeholder="VD: a@example.com" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Số điện thoại</label>
+                <input v-model="personalForm.phone" type="text" class="form-control" placeholder="VD: 0912 345 678" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Website</label>
+                <input v-model="personalForm.website" type="text" class="form-control" placeholder="VD: myportfolio.com" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">GitHub</label>
+                <input v-model="personalForm.github" type="text" class="form-control" placeholder="VD: github.com/username" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">LinkedIn</label>
+                <input v-model="personalForm.linkedin" type="text" class="form-control" placeholder="VD: linkedin.com/in/username" />
+              </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 32px;">
+              <label class="form-label">Tóm tắt bản thân (Summary)</label>
+              <textarea v-model="personalForm.summary" class="form-control" rows="4" placeholder="Viết một đoạn giới thiệu ngắn về bản thân..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" :disabled="isSavingPersonal">
+              {{ isSavingPersonal ? 'Đang lưu...' : 'Lưu Thông Tin' }}
+            </button>
+          </form>
+        </div>
+      </div>
 
       <!-- ==================== TAB: COMPANIES ==================== -->
       <div v-if="activeTab === 'companies'">

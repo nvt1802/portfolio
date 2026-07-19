@@ -21,7 +21,7 @@ defineProps<{
 // Helper to format startDate/endDate strings
 const formatPeriod = (start: string, end: string) => {
   const formatMonth = (str: string) => {
-    if (!str || str.toLowerCase() === 'present') return 'Hiện tại'
+    if (!str || str.toLowerCase() === 'present') return 'Present'
     const parts = str.split('-')
     const year = parts[0]
     const month = parts[1]

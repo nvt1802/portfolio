@@ -74,33 +74,19 @@ const cvProfileRef = useDocument(doc(db, 'settings', 'cv_profile'))
 const isSavingCvProfile = ref(false)
 
 const cvProfileForm = ref({
-  fullName: '',
-  jobTitle: '',
-  email: '',
-  phone: '',
-  website: '',
-  github: '',
-  linkedin: '',
-  summary: '',
   selectedExperiences: [] as string[],
   selectedProjects: [] as string[],
-  selectedSkills: [] as string[]
+  selectedSkills: [] as string[],
+  cvAvatarUrl: ''
 })
 
 watch(cvProfileRef, (newProfile) => {
   if (newProfile) {
     cvProfileForm.value = {
-      fullName: newProfile.fullName || '',
-      jobTitle: newProfile.jobTitle || '',
-      email: newProfile.email || '',
-      phone: newProfile.phone || '',
-      website: newProfile.website || '',
-      github: newProfile.github || '',
-      linkedin: newProfile.linkedin || '',
-      summary: newProfile.summary || '',
       selectedExperiences: newProfile.selectedExperiences || [],
       selectedProjects: newProfile.selectedProjects || [],
-      selectedSkills: newProfile.selectedSkills || []
+      selectedSkills: newProfile.selectedSkills || [],
+      cvAvatarUrl: newProfile.cvAvatarUrl || ''
     }
   }
 }, { immediate: true })
@@ -160,41 +146,17 @@ const saveCvProfile = async () => {
         <!-- Tab 1: Personal -->
         <div v-show="activeTab === 'personal'">
           <h4 style="margin-bottom: 16px; color: var(--accent); font-size: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">1. Thông tin cá nhân</h4>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
-          <div class="form-group">
-            <label class="form-label">Họ và Tên</label>
-            <input v-model="cvProfileForm.fullName" type="text" class="form-control" placeholder="VD: Nguyễn Văn A" />
+          <div style="margin-bottom: 24px; padding: 16px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: var(--radius-sm); color: var(--text-secondary);">
+            <p style="margin-bottom: 8px;">
+              <strong style="color: var(--text-primary);">Lưu ý:</strong> Dữ liệu cá nhân (Họ tên, Email, SĐT...) hiện được quản lý tập trung. Vui lòng vào trang <strong>Quản lý Dữ liệu > Cá nhân</strong> để cập nhật.
+            </p>
+            <p>Trình tạo CV sẽ tự động lấy các thông tin đó. Tại đây bạn chỉ cần cấu hình ảnh đại diện (avatar) dành riêng cho CV (nếu có).</p>
           </div>
-          <div class="form-group">
-            <label class="form-label">Chức danh (Job Title)</label>
-            <input v-model="cvProfileForm.jobTitle" type="text" class="form-control" placeholder="VD: Frontend Developer" />
+          
+          <div class="form-group" style="margin-bottom: 32px; max-width: 500px;">
+            <label class="form-label">Avatar URL (Dành riêng cho CV)</label>
+            <input v-model="cvProfileForm.cvAvatarUrl" type="text" class="form-control" placeholder="Để trống nếu muốn dùng avatar chung từ Quản lý dữ liệu" />
           </div>
-          <div class="form-group">
-            <label class="form-label">Email</label>
-            <input v-model="cvProfileForm.email" type="email" class="form-control" placeholder="VD: a@example.com" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Số điện thoại</label>
-            <input v-model="cvProfileForm.phone" type="text" class="form-control" placeholder="VD: 0912 345 678" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Website</label>
-            <input v-model="cvProfileForm.website" type="text" class="form-control" placeholder="VD: myportfolio.com" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">GitHub</label>
-            <input v-model="cvProfileForm.github" type="text" class="form-control" placeholder="VD: github.com/username" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">LinkedIn</label>
-            <input v-model="cvProfileForm.linkedin" type="text" class="form-control" placeholder="VD: linkedin.com/in/username" />
-          </div>
-        </div>
-        
-        <div class="form-group" style="margin-bottom: 32px;">
-          <label class="form-label">Tóm tắt bản thân (Summary)</label>
-          <textarea v-model="cvProfileForm.summary" class="form-control" rows="4" placeholder="Viết một đoạn giới thiệu ngắn về bản thân..."></textarea>
-        </div>
 
         </div>
         

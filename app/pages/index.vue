@@ -5,7 +5,7 @@ import { useFirestore, useCollection, useDocument } from 'vuefire'
 import type { Experience } from '~/components/Timeline.vue'
 import type { Project } from '~/components/ProjectCard.vue'
 
-useHead({ title: 'Trang Chủ' })
+useHead({ title: 'Home' })
 
 interface Skill {
   id: string
@@ -57,7 +57,7 @@ const mappedProjects = computed(() => {
     const comp = companies.value?.find((c: any) => c.id === proj.companyId)
     return {
       ...proj,
-      companyName: comp ? comp.name : (proj.companyId ? '' : 'Dự án cá nhân')
+      companyName: comp ? comp.name : (proj.companyId ? '' : 'Personal Project')
     }
   }) as Project[]
 })
@@ -72,16 +72,21 @@ const cvSettings = useDocument(computed(() => {
   return doc(db, 'settings', 'general')
 }))
 
+const personalInfo = useDocument(computed(() => {
+  if (!import.meta.client || !db) return null
+  return doc(db, 'settings', 'personal')
+}))
+
 const homepageSettings = useDocument(computed(() => {
   if (!import.meta.client || !db) return null
   return doc(db, 'settings', 'homepage')
 }))
 
 const defaultSections = [
-  { id: 'hero', name: 'Giới thiệu (Hero)', visible: true },
-  { id: 'skills', name: 'Kỹ Năng Chuyên Môn', subtitle: 'Hệ thống công nghệ nền tảng và công cụ chuyên sâu mà tôi thường sử dụng', visible: true },
-  { id: 'experience', name: 'Kinh Nghiệm Làm Việc', subtitle: 'Hành trình phát triển và các cột mốc công việc từ trước tới nay', visible: true },
-  { id: 'projects', name: 'Dự Án Nổi Bật', subtitle: 'Các dự án, giải pháp hệ thống và sản phẩm tôi từng phát triển', visible: true }
+  { id: 'hero', name: 'Hero', visible: true },
+  { id: 'skills', name: 'Professional Skills', subtitle: 'Core technologies and specialized tools I use regularly', visible: true },
+  { id: 'experience', name: 'Work Experience', subtitle: 'My career journey and professional milestones', visible: true },
+  { id: 'projects', name: 'Featured Projects', subtitle: 'Systems, solutions, and products I have developed', visible: true }
 ]
 
 const orderedSections = computed(() => {
@@ -98,10 +103,10 @@ const orderedSections = computed(() => {
 const heroData = computed(() => {
   if (!homepageSettings.value || !homepageSettings.value.hero) {
     return {
-      badgeText: 'Sẵn sàng hợp tác',
-      titleLine1: 'Xin chào, tôi là một',
+      badgeText: 'Available for work',
+      titleLine1: 'Hello, I am a',
       titleLine2: 'Software Engineer',
-      description: 'Đam mê xây dựng các giải pháp phần mềm chất lượng cao, tối ưu hóa hệ thống backend, phát triển các AI Agent thông minh và quy trình tự động hóa nhằm nâng cao hiệu suất doanh nghiệp.'
+      description: 'Passionate about building high-quality software solutions, optimizing backend systems, developing intelligent AI Agents, and automating workflows to enhance business productivity.'
     }
   }
   return homepageSettings.value.hero
@@ -109,10 +114,10 @@ const heroData = computed(() => {
 
 // SEO Optimization
 useSeoMeta({
-  title: 'Portfolio Cá Nhân | Software Engineer & AI Agent',
-  ogTitle: 'Portfolio Cá Nhân | Software Engineer & AI Agent',
-  description: 'Trang thông tin giới thiệu, kinh nghiệm làm việc, dự án nổi bật và kỹ năng chuyên môn.',
-  ogDescription: 'Trang thông tin giới thiệu, kinh nghiệm làm việc, dự án nổi bật và kỹ năng chuyên môn.',
+  title: 'Personal Portfolio | Software Engineer & AI Agent',
+  ogTitle: 'Personal Portfolio | Software Engineer & AI Agent',
+  description: 'Information, work experience, featured projects, and professional skills.',
+  ogDescription: 'Information, work experience, featured projects, and professional skills.',
   ogImage: '/images/og-image.jpg',
   twitterCard: 'summary_large_image',
 })
@@ -161,7 +166,7 @@ const scrollToSection = (id: string) => {
     <template v-for="section in orderedSections" :key="section.id">
       <!-- Hero Section -->
       <section v-if="section.id === 'hero' && section.visible" class="hero-section">
-      <div class="container hero-container">
+      <div class="container hero-container" style="display: flex; gap: 40px; justify-content: space-between; flex-wrap: wrap-reverse;">
         <div class="hero-content">
           <div class="badge badge-primary hero-badge">{{ heroData.badgeText }}</div>
           <h1 class="hero-title">
@@ -173,7 +178,7 @@ const scrollToSection = (id: string) => {
           </p>
           <div class="hero-actions">
             <button @click="scrollToSection('projects')" class="btn btn-primary">
-              Xem các dự án
+              View Projects
             </button>
             <a 
               v-if="cvSettings && cvSettings.cvUrl" 
@@ -184,9 +189,12 @@ const scrollToSection = (id: string) => {
               <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
               </svg>
-              Tải CV (PDF)
+              Download CV (PDF)
             </a>
           </div>
+        </div>
+        <div v-if="personalInfo && personalInfo.avatarUrl" class="hero-image" style="flex: 1; min-width: 280px; display: flex; justify-content: center; align-items: center;">
+          <img :src="personalInfo.avatarUrl" alt="Avatar" style="width: 320px; height: 320px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 40px rgba(124, 58, 237, 0.4); border: 2px solid var(--border-color);" />
         </div>
       </div>
     </section>
@@ -213,7 +221,7 @@ const scrollToSection = (id: string) => {
                 <div class="skill-circle-level">{{ skill.level || 'N/A' }}</div>
               </div>
             </div>
-            <div v-if="frontendSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Đang cập nhật...</div>
+            <div v-if="frontendSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Updating...</div>
           </div>
 
           <!-- Category: Backend -->
@@ -229,7 +237,7 @@ const scrollToSection = (id: string) => {
                 <div class="skill-circle-level">{{ skill.level || 'N/A' }}</div>
               </div>
             </div>
-            <div v-if="backendSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Đang cập nhật...</div>
+            <div v-if="backendSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Updating...</div>
           </div>
 
           <!-- Category: AI & Automation -->
@@ -245,7 +253,7 @@ const scrollToSection = (id: string) => {
                 <div class="skill-circle-level">{{ skill.level || 'N/A' }}</div>
               </div>
             </div>
-            <div v-if="aiSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Đang cập nhật...</div>
+            <div v-if="aiSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Updating...</div>
           </div>
 
           <!-- Category: Tools & DevOps -->
@@ -261,7 +269,7 @@ const scrollToSection = (id: string) => {
                 <div class="skill-circle-level">{{ skill.level || 'N/A' }}</div>
               </div>
             </div>
-            <div v-if="toolsSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Đang cập nhật...</div>
+            <div v-if="toolsSkills.length === 0" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">Updating...</div>
           </div>
         </div>
       </div>
@@ -277,7 +285,7 @@ const scrollToSection = (id: string) => {
 
         <Timeline v-if="mappedExperiences && mappedExperiences.length > 0" :items="mappedExperiences" />
         <div v-else style="text-align: center; color: var(--text-secondary); padding: 40px 0;">
-          Dữ liệu kinh nghiệm đang được cập nhật...
+          Experience data is being updated...
         </div>
       </div>
     </section>
@@ -298,7 +306,7 @@ const scrollToSection = (id: string) => {
           />
         </div>
         <div v-else style="text-align: center; color: var(--text-secondary); padding: 40px 0;">
-          Dự án đang được cập nhật...
+          Projects are being updated...
         </div>
       </div>
     </section>
@@ -307,9 +315,9 @@ const scrollToSection = (id: string) => {
     <!-- Footer -->
     <footer class="footer">
       <div class="container footer-container">
-        <p class="copyright">&copy; {{ new Date().getFullYear() }} Portfolio Cá Nhân. Tất cả quyền được bảo lưu.</p>
+        <p class="copyright">&copy; {{ new Date().getFullYear() }} Personal Portfolio. All rights reserved.</p>
         <div class="footer-links">
-          <NuxtLink to="/admin" style="color: var(--text-muted); text-decoration: none; font-size: 14px;">Trang quản trị</NuxtLink>
+          <NuxtLink to="/admin" style="color: var(--text-muted); text-decoration: none; font-size: 14px;">Admin Panel</NuxtLink>
         </div>
       </div>
     </footer>
