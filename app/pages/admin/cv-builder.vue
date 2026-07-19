@@ -62,12 +62,13 @@ const categoriesMap: Record<string, string> = {
 
 const tabs = [
   { id: 'personal', name: 'Thông tin cá nhân' },
+  { id: 'template', name: 'Giao diện CV' },
   { id: 'experiences', name: 'Kinh nghiệm' },
   { id: 'projects', name: 'Dự án' },
   { id: 'skills', name: 'Kỹ năng' }
 ] as const
 
-const activeTab = ref<'personal' | 'experiences' | 'projects' | 'skills'>('personal')
+const activeTab = ref<'personal' | 'template' | 'experiences' | 'projects' | 'skills'>('personal')
 
 // CV Builder Profile State
 const cvProfileRef = useDocument(doc(db, 'settings', 'cv_profile'))
@@ -77,7 +78,8 @@ const cvProfileForm = ref({
   selectedExperiences: [] as string[],
   selectedProjects: [] as string[],
   selectedSkills: [] as string[],
-  cvAvatarUrl: ''
+  cvAvatarUrl: '',
+  templateId: 'classic' as 'classic' | 'modern' | 'minimal'
 })
 
 watch(cvProfileRef, (newProfile) => {
@@ -86,7 +88,8 @@ watch(cvProfileRef, (newProfile) => {
       selectedExperiences: newProfile.selectedExperiences || [],
       selectedProjects: newProfile.selectedProjects || [],
       selectedSkills: newProfile.selectedSkills || [],
-      cvAvatarUrl: newProfile.cvAvatarUrl || ''
+      cvAvatarUrl: newProfile.cvAvatarUrl || '',
+      templateId: newProfile.templateId || 'classic'
     }
   }
 }, { immediate: true })
@@ -156,6 +159,79 @@ const saveCvProfile = async () => {
           <div class="form-group" style="margin-bottom: 32px; max-width: 500px;">
             <label class="form-label">Avatar URL (Dành riêng cho CV)</label>
             <input v-model="cvProfileForm.cvAvatarUrl" type="text" class="form-control" placeholder="Để trống nếu muốn dùng avatar chung từ Quản lý dữ liệu" />
+          </div>
+
+          </div>
+
+        <!-- Tab 1.5: Template -->
+        <div v-show="activeTab === 'template'">
+          <h4 style="margin-bottom: 16px; color: var(--accent); font-size: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">Giao diện CV</h4>
+          
+          <div class="form-group" style="margin-bottom: 32px; max-width: 800px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px;">
+              <label class="form-label" style="margin-bottom: 0;">Mẫu giao diện CV (Template)</label>
+              <select v-model="cvProfileForm.templateId" class="form-control" style="width: 200px; padding: 6px 12px;">
+                <option value="classic">Classic (1 cột)</option>
+                <option value="modern">Modern (2 cột)</option>
+                <option value="minimal">Minimalist (Tối giản)</option>
+              </select>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+              
+              <!-- Template: Classic -->
+              <div class="template-option" :class="{ active: cvProfileForm.templateId === 'classic' }" @click="cvProfileForm.templateId = 'classic'">
+                <div class="template-card">
+                  <div class="template-preview" style="background: white; border: 1px solid var(--border-color); height: 120px; border-radius: 4px; padding: 12px; display: flex; flex-direction: column;">
+                    <div style="height: 20px; border-bottom: 2px solid #111; margin-bottom: 8px;"></div>
+                    <div style="flex: 1; background: #f3f4f6; margin-bottom: 4px;"></div>
+                    <div style="flex: 2; background: #f3f4f6;"></div>
+                  </div>
+                  <div class="template-info" style="margin-top: 12px; text-align: center;">
+                    <div style="font-weight: 600; color: var(--text-primary);">Classic</div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Truyền thống, 1 cột</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Template: Modern -->
+              <div class="template-option" :class="{ active: cvProfileForm.templateId === 'modern' }" @click="cvProfileForm.templateId = 'modern'">
+                <div class="template-card">
+                  <div class="template-preview" style="background: white; border: 1px solid var(--border-color); height: 120px; border-radius: 4px; display: flex; overflow: hidden;">
+                    <div style="width: 35%; background: #f8fafc; border-right: 1px solid #e5e7eb; padding: 8px; display: flex; flex-direction: column; align-items: center;">
+                      <div style="width: 24px; height: 24px; border-radius: 50%; background: #ccc; margin-bottom: 8px;"></div>
+                      <div style="width: 100%; height: 4px; background: #e5e7eb; margin-bottom: 4px;"></div>
+                    </div>
+                    <div style="width: 65%; padding: 8px; display: flex; flex-direction: column;">
+                      <div style="height: 12px; background: #111; margin-bottom: 8px; width: 60%;"></div>
+                      <div style="flex: 1; background: #f3f4f6; margin-bottom: 4px;"></div>
+                    </div>
+                  </div>
+                  <div class="template-info" style="margin-top: 12px; text-align: center;">
+                    <div style="font-weight: 600; color: var(--text-primary);">Modern</div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Hiện đại, 2 cột</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Template: Minimal -->
+              <div class="template-option" :class="{ active: cvProfileForm.templateId === 'minimal' }" @click="cvProfileForm.templateId = 'minimal'">
+                <div class="template-card">
+                  <div class="template-preview" style="background: white; border: 1px solid var(--border-color); height: 120px; border-radius: 4px; padding: 12px; display: flex; flex-direction: column; align-items: center;">
+                    <div style="height: 14px; background: #111; width: 50%; margin-bottom: 4px;"></div>
+                    <div style="height: 6px; background: #999; width: 30%; margin-bottom: 12px;"></div>
+                    <div style="width: 100%; height: 4px; background: #f3f4f6; margin-bottom: 6px;"></div>
+                    <div style="width: 100%; height: 4px; background: #f3f4f6; margin-bottom: 6px;"></div>
+                    <div style="width: 100%; height: 4px; background: #f3f4f6;"></div>
+                  </div>
+                  <div class="template-info" style="margin-top: 12px; text-align: center;">
+                    <div style="font-weight: 600; color: var(--text-primary);">Minimalist</div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Tối giản, chữ lớn</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
 
         </div>
