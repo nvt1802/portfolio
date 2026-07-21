@@ -9,25 +9,35 @@ export interface Project {
   imageUrl?: string
   imagePath?: string
   companyName?: string
+  imageScale?: number
+  imageX?: number
+  imageY?: number
+  imageBg?: string
+  imageFit?: string
 }
 
 defineProps<{
   project: Project
+  skills?: any[]
 }>()
 </script>
 
 <template>
   <div class="flex flex-col h-full overflow-hidden bg-[color:var(--glass-bg)] backdrop-blur-[12px] border border-[color:var(--glass-border)] rounded-2xl p-0 transition-all duration-300 hover:-translate-y-2 hover:border-[color:var(--border-color-hover)] hover:shadow-[0_15px_40px_-10px_rgba(0,0,0,0.6),0_0_25px_0_var(--primary-glow)] group">
-    <div class="relative w-full h-40 sm:h-48 bg-white/2 overflow-hidden border-b border-[color:var(--border-color)]">
-      <NuxtImg 
-        v-if="project.imageUrl" 
-        :src="project.imageUrl" 
-        :alt="project.title"
-        loading="lazy"
-        class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-      />
-      <div v-else class="absolute top-0 left-0 w-full h-full flex items-center justify-center font-display text-[48px] font-extrabold text-[color:var(--primary)] bg-gradient-to-br from-violet-600/10 to-pink-500/5 transition-transform duration-500 group-hover:scale-110">
-        <span>{{ project.title.charAt(0) }}</span>
+    <div class="relative w-full h-40 sm:h-48 bg-white/2 overflow-hidden border-b border-[color:var(--border-color)]" :style="{ backgroundColor: project.imageBg || '' }">
+      <div class="absolute top-0 left-0 w-full h-full transition-transform duration-500 group-hover:scale-110">
+        <NuxtImg 
+          v-if="project.imageUrl" 
+          :src="project.imageUrl" 
+          :alt="project.title"
+          loading="lazy"
+          class="w-full h-full"
+          :class="project.imageFit === 'contain' ? 'object-contain' : 'object-cover'"
+          :style="{ transform: `scale(${project.imageScale ?? 1}) translate(${project.imageX ?? 0}px, ${project.imageY ?? 0}px)` }"
+        />
+        <div v-else class="w-full h-full flex items-center justify-center font-display text-[48px] font-extrabold text-[color:var(--primary)] bg-gradient-to-br from-violet-600/10 to-pink-500/5">
+          <span>{{ project.title.charAt(0) }}</span>
+        </div>
       </div>
       
       <!-- Overlay Gradient -->
@@ -61,8 +71,13 @@ defineProps<{
         <span 
           v-for="tech in project.techStack" 
           :key="tech" 
-          class="inline-flex px-3 py-1 rounded-full text-[12px] font-medium bg-white/5 text-white/80 border border-white/10 backdrop-blur-sm transition-colors duration-200 group-hover:border-white/20 group-hover:text-white"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium bg-white/5 text-white/80 border border-white/10 backdrop-blur-sm transition-colors duration-200 group-hover:border-white/20 group-hover:text-white"
         >
+          <NuxtImg 
+            v-if="skills && skills.find(s => s.name.toLowerCase() === tech.toLowerCase())?.iconUrl"
+            :src="skills.find(s => s.name.toLowerCase() === tech.toLowerCase())?.iconUrl"
+            class="w-4 h-4 object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+          />
           {{ tech }}
         </span>
       </div>

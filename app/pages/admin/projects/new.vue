@@ -40,7 +40,12 @@ const projForm = ref({
   role: '',
   workDone: '',
   client: '',
-  order: 0
+  order: 0,
+  imageScale: 1,
+  imageX: 0,
+  imageY: 0,
+  imageBg: '',
+  imageFit: 'cover'
 })
 
 const showToast = (msg: string) => {
@@ -107,7 +112,12 @@ const saveProject = async () => {
       role: projForm.value.role,
       workDone: projForm.value.workDone,
       client: projForm.value.client,
-      order: projForm.value.order
+      order: projForm.value.order,
+      imageScale: projForm.value.imageScale,
+      imageX: projForm.value.imageX,
+      imageY: projForm.value.imageY,
+      imageBg: projForm.value.imageBg,
+      imageFit: projForm.value.imageFit
     }
 
     await addDoc(collection(db, 'projects'), dataToSave)
@@ -236,7 +246,38 @@ const saveProject = async () => {
           
           <div v-if="projForm.imageUrl" class="mt-4 p-3 bg-white/5 border border-[color:var(--border-color)] rounded-[color:var(--radius-sm)]">
             <span class="text-[13px] text-[color:var(--text-secondary)] block mb-2">Xem trước ảnh:</span>
-            <img :src="projForm.imageUrl" class="block w-full max-h-[200px] object-contain rounded-md border border-dashed border-[color:var(--border-color)]" />
+            <div class="overflow-hidden bg-white/5 border border-[color:var(--border-color)] mb-4" :style="{ backgroundColor: projForm.imageBg || '' }">
+              <img :src="projForm.imageUrl" 
+                   class="block w-full h-[160px] sm:h-[192px]" 
+                   :class="projForm.imageFit === 'contain' ? 'object-contain' : 'object-cover'"
+                   :style="{ transform: `scale(${projForm.imageScale}) translate(${projForm.imageX}px, ${projForm.imageY}px)` }" />
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mt-4">
+              <div class="form-group">
+                <label class="form-label text-[12px]">Kích thước (Scale) - Mặc định: 1</label>
+                <input v-model.number="projForm.imageScale" type="number" step="0.1" class="form-control p-2 text-[14px]" />
+              </div>
+              <div class="form-group">
+                <label class="form-label text-[12px]">Kiểu hiển thị</label>
+                <select v-model="projForm.imageFit" class="form-control p-2 text-[14px] bg-black/20 text-white">
+                  <option class="text-black" value="cover">Lấp đầy (Cover)</option>
+                  <option class="text-black" value="contain">Vừa vặn (Contain)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label text-[12px]">Dịch ngang (X) px</label>
+                <input v-model.number="projForm.imageX" type="number" step="5" class="form-control p-2 text-[14px]" />
+              </div>
+              <div class="form-group">
+                <label class="form-label text-[12px]">Dịch dọc (Y) px</label>
+                <input v-model.number="projForm.imageY" type="number" step="5" class="form-control p-2 text-[14px]" />
+              </div>
+              <div class="form-group col-span-2">
+                <label class="form-label text-[12px]">Màu nền (nếu dùng Contain)</label>
+                <input v-model="projForm.imageBg" type="text" class="form-control p-2 text-[14px]" placeholder="VD: #ffffff, transparent, rgba(0,0,0,0.5)" />
+              </div>
+            </div>
           </div>
         </div>
         

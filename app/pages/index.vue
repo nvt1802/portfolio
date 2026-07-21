@@ -329,7 +329,8 @@ const scrollToSection = (id: string) => {
           <ProjectCard 
             v-for="project in mappedProjects" 
             :key="project.id" 
-            :project="project" 
+            :project="project"
+            :skills="skills || []"
           />
         </div>
         <div v-else class="text-center text-[color:var(--text-secondary)] py-10">
