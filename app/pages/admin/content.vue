@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { collection, doc, deleteDoc, query, orderBy, setDoc } from 'firebase/firestore'
+import { collection, doc, deleteDoc, query, orderBy, setDoc, writeBatch } from 'firebase/firestore'
 import { useFirestore, useCollection, useDocument } from 'vuefire'
 
 useHead({ title: 'Quản lý Dữ liệu' })
@@ -117,10 +117,13 @@ const deleteExperience = (id: string) => {
 // ==========================================
 // 3. TAB: PROJECTS CRUD
 // ==========================================
-const projects = useCollection(computed(() => {
+const rawProjects = useCollection(computed(() => {
   if (!import.meta.client || !db) return null
   return collection(db, 'projects')
 }))
+const projects = computed(() => {
+  return [...(rawProjects.value || [])].sort((a, b) => (b.order || 0) - (a.order || 0))
+})
 
 const deleteProject = (id: string) => {
   triggerConfirm('Bạn có chắc chắn muốn xóa dự án này? Hành động này không thể hoàn tác.', async () => {
@@ -132,6 +135,56 @@ const deleteProject = (id: string) => {
       showToast(`Xóa thất bại: ${error.message || error}`)
     }
   })
+}
+
+// --- Project Drag & Drop Sort ---
+const isProjectSortMode = ref(false)
+const sortableProjects = ref<any[]>([])
+const projectDraggedIndex = ref<number | null>(null)
+const isSavingProjectOrder = ref(false)
+
+const toggleProjectSortMode = () => {
+  if (!isProjectSortMode.value) {
+    sortableProjects.value = [...(projects.value || [])]
+  }
+  isProjectSortMode.value = !isProjectSortMode.value
+}
+
+const onProjectDragStart = (index: number) => {
+  projectDraggedIndex.value = index
+}
+
+const onProjectDragEnter = (index: number) => {
+  if (projectDraggedIndex.value === null || projectDraggedIndex.value === index) return
+  const draggedItem = sortableProjects.value[projectDraggedIndex.value]
+  sortableProjects.value.splice(projectDraggedIndex.value, 1)
+  sortableProjects.value.splice(index, 0, draggedItem)
+  projectDraggedIndex.value = index
+}
+
+const onProjectDragEnd = () => {
+  projectDraggedIndex.value = null
+}
+
+const saveProjectsOrder = async () => {
+  if (!sortableProjects.value.length) return
+  isSavingProjectOrder.value = true
+  try {
+    const batch = writeBatch(db)
+    const total = sortableProjects.value.length
+    sortableProjects.value.forEach((proj, index) => {
+      const projRef = doc(db, 'projects', proj.id)
+      batch.update(projRef, { order: total - index })
+    })
+    await batch.commit()
+    showToast('Đã lưu thứ tự dự án!')
+    isProjectSortMode.value = false
+  } catch (error: any) {
+    console.error(error)
+    showToast(`Lỗi khi lưu thứ tự: ${error.message}`)
+  } finally {
+    isSavingProjectOrder.value = false
+  }
 }
 
 // ==========================================
@@ -304,7 +357,7 @@ const savePersonalInfo = async () => {
             
             <div class="form-group mb-8">
               <label class="form-label">Tóm tắt bản thân (Summary)</label>
-              <textarea v-model="personalForm.summary" class="form-control" rows="4" placeholder="Viết một đoạn giới thiệu ngắn về bản thân..."></textarea>
+              <RichTextEditor v-model="personalForm.summary" />
             </div>
 
             <button type="submit" class="btn btn-primary" :disabled="isSavingPersonal">
@@ -419,12 +472,49 @@ const savePersonalInfo = async () => {
       <div v-if="activeTab === 'projects'">
         <div class="flex justify-between items-center mb-5">
           <h3 class="text-[20px] font-bold">Dự án nổi bật</h3>
-          <NuxtLink to="/admin/projects/new" class="btn btn-primary no-underline">
-            + Thêm dự án
-          </NuxtLink>
+          <div class="flex gap-3">
+            <button v-if="!isProjectSortMode" @click="toggleProjectSortMode" class="btn bg-black/30 border border-white/10 hover:bg-white/10">
+              <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+              Sắp xếp
+            </button>
+            <button v-else @click="toggleProjectSortMode" class="btn bg-black/30 border border-white/10 hover:bg-white/10">
+              Hủy
+            </button>
+            <NuxtLink v-if="!isProjectSortMode" to="/admin/projects/new" class="btn btn-primary no-underline">
+              + Thêm dự án
+            </NuxtLink>
+            <button v-if="isProjectSortMode" @click="saveProjectsOrder" class="btn btn-primary" :disabled="isSavingProjectOrder">
+              {{ isSavingProjectOrder ? 'Đang lưu...' : 'Lưu thứ tự' }}
+            </button>
+          </div>
         </div>
 
-        <div class="glass-card p-0 overflow-x-auto">
+        <div v-if="isProjectSortMode" class="glass-card p-6 mb-5">
+          <p class="text-[color:var(--text-secondary)] mb-4 text-sm"><span class="font-bold text-white">Hướng dẫn:</span> Kéo thả các ô bên dưới để thay đổi thứ tự (mục trên cùng sẽ hiển thị đầu tiên). Nhấn "Lưu thứ tự" khi hoàn tất.</p>
+          <div class="flex flex-col gap-2">
+            <div
+              v-for="(proj, index) in sortableProjects"
+              :key="proj.id"
+              draggable="true"
+              @dragstart="onProjectDragStart(index)"
+              @dragenter.prevent="onProjectDragEnter(index)"
+              @dragover.prevent
+              @dragend="onProjectDragEnd"
+              class="flex items-center gap-4 bg-black/20 p-3 rounded-md border border-[color:var(--border-color)] cursor-move hover:border-[color:var(--cv-primary)] hover:bg-white/5 transition-colors"
+              :class="{ 'opacity-50 border-dashed': projectDraggedIndex === index }"
+            >
+              <div class="text-[color:var(--text-muted)]">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+              </div>
+              <img v-if="proj.imageUrl" :src="proj.imageUrl" class="w-[40px] h-[30px] object-cover rounded border border-[color:var(--border-color)]" />
+              <div v-else class="w-[40px] h-[30px] bg-white/5 rounded border border-[color:var(--border-color)] flex items-center justify-center text-[10px] text-[color:var(--text-muted)]">No Img</div>
+              <div class="font-semibold flex-1">{{ proj.title }}</div>
+              <div class="text-sm text-[color:var(--text-secondary)]">Thứ tự cũ: {{ proj.order || 0 }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div v-show="!isProjectSortMode" class="glass-card p-0 overflow-x-auto">
           <table class="admin-table">
             <thead>
               <tr>

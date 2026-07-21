@@ -188,17 +188,17 @@ const scrollToSection = (id: string) => {
 
     <template v-for="section in orderedSections" :key="section.id">
       <!-- Hero Section -->
-      <section v-if="section.id === 'hero' && section.visible" class="min-h-screen flex items-center pt-[120px] pb-[80px]">
+      <section v-if="section.id === 'hero' && section.visible" class="min-h-screen flex items-center pt-[100px] pb-[40px]">
       <div class="container flex flex-col-reverse lg:flex-row items-center gap-10 lg:gap-16 justify-between text-center lg:text-left">
         <div class="max-w-[700px] flex flex-col items-center lg:items-start">
-          <div class="badge badge-primary mb-6">{{ heroData.badgeText }}</div>
           <h1 class="text-[36px] sm:text-[44px] md:text-[54px] leading-[1.2] font-extrabold mb-6">
             {{ heroData.titleLine1 }}<br />
             <span class="gradient-text font-display">{{ heroData.titleLine2 }}</span>
           </h1>
-          <p class="text-[color:var(--text-secondary)] text-[16px] sm:text-[18px] leading-[1.6] mb-10 max-w-[90%] sm:max-w-full">
-            {{ heroData.description }}
-          </p>
+          <div 
+            class="text-[color:var(--text-secondary)] text-[16px] sm:text-[18px] leading-[1.6] mb-10 max-w-[90%] sm:max-w-full [&>p]:mb-3 [&>ul]:list-disc [&>ul]:pl-5 [&>ol]:list-decimal [&>ol]:pl-5"
+            v-html="heroData.description"
+          ></div>
           <div class="flex gap-4 flex-wrap justify-center lg:justify-start">
             <button @click="scrollToSection('projects')" class="btn btn-primary w-full sm:w-auto">
               View Projects
@@ -223,9 +223,9 @@ const scrollToSection = (id: string) => {
     </section>
 
     <!-- Skills Section -->
-    <section v-else-if="section.id === 'skills' && section.visible" id="skills" class="py-20">
+    <section v-else-if="section.id === 'skills' && section.visible" id="skills" class="py-12">
       <div class="container">
-        <div class="text-center mb-14">
+        <div class="text-center mb-10">
           <h2 class="text-[36px] font-extrabold mb-3 gradient-text">{{ section.name }}</h2>
           <p class="text-[color:var(--text-secondary)] text-[16px] max-w-[600px] mx-auto" v-if="section.subtitle">{{ section.subtitle }}</p>
         </div>
@@ -315,9 +315,9 @@ const scrollToSection = (id: string) => {
     </section>
 
     <!-- Experience Section -->
-    <section v-else-if="section.id === 'experience' && section.visible" id="experience" class="py-20">
+    <section v-else-if="section.id === 'experience' && section.visible" id="experience" class="py-12">
       <div class="container">
-        <div class="text-center mb-14">
+        <div class="text-center mb-10">
           <h2 class="text-[36px] font-extrabold mb-3 gradient-text">{{ section.name }}</h2>
           <p class="text-[color:var(--text-secondary)] text-[16px] max-w-[600px] mx-auto" v-if="section.subtitle">{{ section.subtitle }}</p>
         </div>
@@ -330,9 +330,9 @@ const scrollToSection = (id: string) => {
     </section>
 
     <!-- Projects Section -->
-    <section v-else-if="section.id === 'projects' && section.visible" id="projects" class="py-20">
+    <section v-else-if="section.id === 'projects' && section.visible" id="projects" class="py-12">
       <div class="container">
-        <div class="text-center mb-14">
+        <div class="text-center mb-10">
           <h2 class="text-[36px] font-extrabold mb-3 gradient-text">{{ section.name }}</h2>
           <p class="text-[color:var(--text-secondary)] text-[16px] max-w-[600px] mx-auto" v-if="section.subtitle">{{ section.subtitle }}</p>
         </div>

@@ -116,7 +116,7 @@ const saveSkill = async () => {
 
         <div v-if="skillForm.displayType === 'text'" class="form-group mb-5">
           <label class="form-label">Mô tả chi tiết (Hỗ trợ xuống dòng)</label>
-          <textarea v-model="skillForm.description" class="form-control" rows="5" placeholder="Ví dụ:&#10;- Web Workers, Code Splitting&#10;- Lighthouse optimization"></textarea>
+          <RichTextEditor v-model="skillForm.description" />
         </div>
         
         <div class="form-group mb-6">

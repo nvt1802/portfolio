@@ -6,6 +6,34 @@ defineProps<{
   filteredProjects: any[]
   groupedSkills: Record<string, any[]>
 }>()
+
+const MONTH_NAMES = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+
+const formatDateRange = (item: any) => {
+  let startStr = item.startDate || ''
+  if (item.startMonth && item.startYear) {
+    startStr = `${MONTH_NAMES[item.startMonth - 1]} ${item.startYear}`
+  } else if (startStr.match(/^\d{4}-\d{2}$/)) {
+    const y = parseInt(startStr.split('-')[0])
+    const m = parseInt(startStr.split('-')[1])
+    startStr = `${MONTH_NAMES[m - 1]} ${y}`
+  }
+
+  let endStr = item.endDate || 'Present'
+  if (item.isCurrent) {
+    endStr = 'PRESENT'
+  } else if (item.endMonth && item.endYear) {
+    endStr = `${MONTH_NAMES[item.endMonth - 1]} ${item.endYear}`
+  } else if (endStr.match(/^\d{4}-\d{2}$/)) {
+    const y = parseInt(endStr.split('-')[0])
+    const m = parseInt(endStr.split('-')[1])
+    endStr = `${MONTH_NAMES[m - 1]} ${y}`
+  } else if (endStr.toLowerCase() === 'present' || endStr.toLowerCase() === 'đến nay' || endStr.toLowerCase() === 'hiện tại') {
+    endStr = 'PRESENT'
+  }
+
+  return startStr ? `${startStr} - ${endStr}` : ''
+}
 </script>
 
 <template>
@@ -40,7 +68,7 @@ defineProps<{
           <div class="flex flex-wrap items-baseline gap-2 mb-1">
             <span class="font-semibold text-[14px]">{{ exp.role }}</span>
             <span class="font-normal text-[14px] text-[#555]">{{ exp.company }}</span>
-            <span class="text-[12px] text-[#888] ml-auto">{{ exp.startDate || '' }} – {{ exp.endDate || 'Present' }}</span>
+            <span class="text-[12px] text-[#888] ml-auto">{{ formatDateRange(exp) }}</span>
           </div>
           <div v-if="exp.projectName" class="text-[12px] text-[#666] italic mb-1.5">Project: {{ exp.projectName }}</div>
           <div class="text-[13px] text-[#333] [&>ul]:my-1 [&>ul]:pl-4 [&>ul>li]:mb-0.5" v-html="exp.description"></div>
@@ -59,7 +87,7 @@ defineProps<{
                 <span v-if="proj.role" class="text-[13px] text-[#666] hidden sm:inline">|</span>
                 <span v-if="proj.role" class="text-[13px] text-[#444] font-medium">{{ proj.role }}</span>
               </div>
-              <div v-if="proj.startDate" class="text-[12px] text-[#777] shrink-0 mt-0.5 sm:mt-0">{{ proj.startDate }} - {{ proj.endDate || 'Present' }}</div>
+              <div v-if="formatDateRange(proj)" class="text-[12px] text-[#777] shrink-0 mt-0.5 sm:mt-0">{{ formatDateRange(proj) }}</div>
             </div>
             
             <div class="flex flex-wrap gap-x-4 gap-y-1 mb-2 items-center">

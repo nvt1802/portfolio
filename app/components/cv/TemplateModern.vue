@@ -6,6 +6,34 @@ defineProps<{
   filteredProjects: any[]
   groupedSkills: Record<string, any[]>
 }>()
+
+const MONTH_NAMES = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+
+const formatDateRange = (item: any) => {
+  let startStr = item.startDate || ''
+  if (item.startMonth && item.startYear) {
+    startStr = `${MONTH_NAMES[item.startMonth - 1]} ${item.startYear}`
+  } else if (startStr.match(/^\d{4}-\d{2}$/)) {
+    const y = parseInt(startStr.split('-')[0])
+    const m = parseInt(startStr.split('-')[1])
+    startStr = `${MONTH_NAMES[m - 1]} ${y}`
+  }
+
+  let endStr = item.endDate || 'Present'
+  if (item.isCurrent) {
+    endStr = 'PRESENT'
+  } else if (item.endMonth && item.endYear) {
+    endStr = `${MONTH_NAMES[item.endMonth - 1]} ${item.endYear}`
+  } else if (endStr.match(/^\d{4}-\d{2}$/)) {
+    const y = parseInt(endStr.split('-')[0])
+    const m = parseInt(endStr.split('-')[1])
+    endStr = `${MONTH_NAMES[m - 1]} ${y}`
+  } else if (endStr.toLowerCase() === 'present' || endStr.toLowerCase() === 'đến nay' || endStr.toLowerCase() === 'hiện tại') {
+    endStr = 'PRESENT'
+  }
+
+  return startStr ? `${startStr} - ${endStr}` : ''
+}
 </script>
 
 <template>
@@ -80,7 +108,7 @@ defineProps<{
                   <span class="font-bold text-[color:var(--cv-primary)] text-[16px]">{{ exp.role }}</span>
                   <span class="font-medium text-[14px] text-[color:var(--cv-text-light)]">at {{ exp.company }} <span v-if="exp.projectName" class="font-normal">(Project: {{ exp.projectName }})</span></span>
                 </div>
-                <div class="text-[12px] text-[color:var(--cv-accent)] font-semibold">{{ exp.startDate || '' }} - {{ exp.endDate || 'Present' }}</div>
+                <div class="text-[12px] text-[color:var(--cv-accent)] font-semibold">{{ formatDateRange(exp) }}</div>
               </div>
               <div class="text-[13px] text-[color:var(--cv-text)] leading-[1.6] [&>ul]:my-2 [&>ul]:pl-5 [&>ul>li]:mb-1.5" v-html="exp.description"></div>
             </div>
@@ -89,12 +117,12 @@ defineProps<{
 
         <!-- Projects Section -->
         <section v-if="filteredProjects.length > 0" class="mb-8">
-          <h3 class="text-[18px] font-bold text-[color:var(--cv-primary)] m-0 mb-6 flex items-center gap-3 after:content-[''] after:grow after:h-px after:bg-[color:var(--cv-border)]">Featured Projects</h3>
+          <h3 class="text-[18px] font-bold text-[color:var(--cv-primary)] m-0 mb-6 flex items-center gap-3 after:content-[''] after:grow after:h-px after:bg-[color:var(--cv-border)]">Projects</h3>
           <div class="space-y-7">
             <div v-for="proj in filteredProjects" :key="proj.id" class="group mb-8">
               <div class="mb-2">
                 <span class="font-bold text-[color:var(--cv-primary)] text-[16px] block">{{ proj.title }}</span>
-                <span v-if="proj.startDate" class="text-[13.5px] text-[color:var(--cv-text)]">({{ proj.startDate }} - {{ proj.endDate || 'Present' }})</span>
+                <span v-if="formatDateRange(proj)" class="text-[13.5px] text-[color:var(--cv-text)]">({{ formatDateRange(proj) }})</span>
               </div>
               
               <div class="text-[13.5px] text-[color:var(--cv-text)] mt-3">

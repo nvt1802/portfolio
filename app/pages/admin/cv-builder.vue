@@ -43,10 +43,13 @@ const experiences = computed(() => {
   })
 })
 
-const projects = useCollection(computed(() => {
+const rawProjects = useCollection(computed(() => {
   if (!import.meta.client || !db) return null
   return collection(db, 'projects')
 }))
+const projects = computed(() => {
+  return [...(rawProjects.value || [])].sort((a, b) => (b.order || 0) - (a.order || 0))
+})
 
 const skills = useCollection(computed(() => {
   if (!import.meta.client || !db) return null

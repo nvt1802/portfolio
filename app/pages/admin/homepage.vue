@@ -25,7 +25,6 @@ const defaultSections = [
 const sections = ref<{ id: string, name: string, subtitle?: string, visible: boolean }[]>([])
 
 const heroSettings = ref({
-  badgeText: 'Sẵn sàng hợp tác',
   titleLine1: 'Xin chào, tôi là một',
   titleLine2: 'Software Engineer',
   description: 'Đam mê xây dựng các giải pháp phần mềm chất lượng cao, tối ưu hóa hệ thống backend, phát triển các AI Agent thông minh và quy trình tự động hóa nhằm nâng cao hiệu suất doanh nghiệp.'
@@ -134,12 +133,6 @@ const saveSettings = async () => {
       <h3 class="mb-6 text-[color:var(--text-primary)] border-b border-[color:var(--border-color)] pb-3 font-bold text-lg">Cấu hình khối Giới thiệu (Hero)</h3>
       <div class="grid grid-cols-2 gap-4 mb-4">
         <div class="form-group">
-          <label class="form-label">Dòng Badge (nhỏ)</label>
-          <input v-model="heroSettings.badgeText" type="text" class="form-control" />
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-4 mb-4">
-        <div class="form-group">
           <label class="form-label">Tiêu đề - Dòng 1</label>
           <input v-model="heroSettings.titleLine1" type="text" class="form-control" />
         </div>
@@ -150,7 +143,7 @@ const saveSettings = async () => {
       </div>
       <div class="form-group mb-10">
         <label class="form-label">Đoạn mô tả ngắn</label>
-        <textarea v-model="heroSettings.description" class="form-control" rows="3"></textarea>
+        <RichTextEditor v-model="heroSettings.description" />
       </div>
 
       <!-- Sections order -->

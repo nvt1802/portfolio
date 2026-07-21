@@ -29,12 +29,18 @@ const projForm = ref({
   demoLink: '',
   githubLink: '',
   imageUrl: '',
-  startDate: '',
-  endDate: '',
+  startDate: '', // legacy
+  endDate: '', // legacy
+  startMonth: 1,
+  startYear: new Date().getFullYear(),
+  endMonth: 1,
+  endYear: new Date().getFullYear(),
+  isCurrent: false,
   teamSize: '',
   role: '',
   workDone: '',
-  client: ''
+  client: '',
+  order: 0
 })
 
 const showToast = (msg: string) => {
@@ -73,6 +79,15 @@ const saveProject = async () => {
       ? projForm.value.techStackInput.split(',').map(s => s.trim()).filter(Boolean)
       : []
 
+    const sMonth = projForm.value.startMonth.toString().padStart(2, '0')
+    const computedStartDate = `${projForm.value.startYear}-${sMonth}`
+    
+    let computedEndDate = 'Present'
+    if (!projForm.value.isCurrent) {
+      const eMonth = projForm.value.endMonth.toString().padStart(2, '0')
+      computedEndDate = `${projForm.value.endYear}-${eMonth}`
+    }
+
     const dataToSave = {
       companyId: projForm.value.companyId,
       title: projForm.value.title,
@@ -81,12 +96,18 @@ const saveProject = async () => {
       demoLink: projForm.value.demoLink,
       githubLink: projForm.value.githubLink,
       imageUrl: projForm.value.imageUrl,
-      startDate: projForm.value.startDate,
-      endDate: projForm.value.endDate,
+      startDate: computedStartDate,
+      endDate: computedEndDate,
+      startMonth: projForm.value.startMonth,
+      startYear: projForm.value.startYear,
+      endMonth: projForm.value.isCurrent ? null : projForm.value.endMonth,
+      endYear: projForm.value.isCurrent ? null : projForm.value.endYear,
+      isCurrent: projForm.value.isCurrent,
       teamSize: projForm.value.teamSize,
       role: projForm.value.role,
       workDone: projForm.value.workDone,
-      client: projForm.value.client
+      client: projForm.value.client,
+      order: projForm.value.order
     }
 
     await addDoc(collection(db, 'projects'), dataToSave)
@@ -123,8 +144,8 @@ const saveProject = async () => {
         <div class="form-group mb-5">
           <label class="form-label">Công ty / Tổ chức</label>
           <select v-model="projForm.companyId" class="form-control p-3 bg-black/20 text-white border border-white/10">
-            <option value="">-- Thuộc dự án cá nhân (Không thuộc công ty) --</option>
-            <option v-for="comp in companies" :key="comp.id" :value="comp.id">{{ comp.name }}</option>
+            <option class="text-black" value="">-- Thuộc dự án cá nhân (Không thuộc công ty) --</option>
+            <option class="text-black" v-for="comp in companies" :key="comp.id" :value="comp.id">{{ comp.name }}</option>
           </select>
         </div>
         <div class="form-group mb-5">
@@ -132,18 +153,41 @@ const saveProject = async () => {
           <input v-model="projForm.title" type="text" class="form-control" placeholder="Ví dụ: Hệ thống AI Chatbot" required />
         </div>
         <div class="form-group mb-5">
+          <label class="form-label">Thứ tự hiển thị (Order)</label>
+          <input v-model.number="projForm.order" type="number" class="form-control" placeholder="Số lớn hơn sẽ hiển thị trước (hoặc tuỳ sắp xếp)" />
+        </div>
+        <div class="form-group mb-5">
           <label class="form-label">Mô tả dự án</label>
-          <textarea v-model="projForm.description" class="form-control" rows="4" placeholder="Nhập mô tả ngắn về dự án..." required></textarea>
+          <RichTextEditor v-model="projForm.description" />
         </div>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-5">
+          <!-- Start Date -->
           <div class="form-group">
             <label class="form-label">Thời gian bắt đầu</label>
-            <input v-model="projForm.startDate" type="text" class="form-control" placeholder="Ví dụ: 01/2021" />
+            <div class="flex gap-3">
+              <select v-model="projForm.startMonth" class="form-control flex-1 p-3 bg-black/20 text-white border border-white/10" required>
+                <option class="text-black" v-for="m in 12" :key="m" :value="m">Tháng {{ m }}</option>
+              </select>
+              <input v-model.number="projForm.startYear" type="number" class="form-control flex-1" placeholder="Năm (VD: 2021)" required />
+            </div>
           </div>
+          
+          <!-- End Date -->
           <div class="form-group">
-            <label class="form-label">Thời gian kết thúc</label>
-            <input v-model="projForm.endDate" type="text" class="form-control" placeholder="Ví dụ: 12/2021 hoặc Hiện tại" />
+            <div class="flex justify-between items-center mb-2">
+              <label class="form-label mb-0">Thời gian kết thúc</label>
+              <label class="flex items-center gap-2 cursor-pointer text-[13px] text-gray-300">
+                <input v-model="projForm.isCurrent" type="checkbox" class="rounded border-gray-600 bg-black/20 text-[color:var(--cv-primary)]" />
+                Đến nay (Present)
+              </label>
+            </div>
+            <div class="flex gap-3" :class="{ 'opacity-50 pointer-events-none': projForm.isCurrent }">
+              <select v-model="projForm.endMonth" class="form-control flex-1 p-3 bg-black/20 text-white border border-white/10" :required="!projForm.isCurrent">
+                <option class="text-black" v-for="m in 12" :key="m" :value="m">Tháng {{ m }}</option>
+              </select>
+              <input v-model.number="projForm.endYear" type="number" class="form-control flex-1" placeholder="Năm (VD: 2024)" :required="!projForm.isCurrent" />
+            </div>
           </div>
         </div>
 
@@ -165,7 +209,7 @@ const saveProject = async () => {
         
         <div class="form-group mb-5">
           <label class="form-label">Chi tiết công việc / Đóng góp</label>
-          <textarea v-model="projForm.workDone" class="form-control" rows="4" placeholder="Liệt kê chi tiết các công việc bạn làm trong dự án (Có thể dùng gạch đầu dòng)..."></textarea>
+          <RichTextEditor v-model="projForm.workDone" />
         </div>
         
         <div class="form-group mb-5">

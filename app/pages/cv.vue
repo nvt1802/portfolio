@@ -86,7 +86,11 @@ const filteredProjects = computed(() => {
   if (!cvProfileRef.value || !cvProfileRef.value.selectedProjects) return []
   return projects.value
     .filter(p => cvProfileRef.value!.selectedProjects.includes(p.id))
-    .sort((a, b) => parseDateStr(b.startDate || '') - parseDateStr(a.startDate || ''))
+    .sort((a, b) => {
+      const orderDiff = (b.order || 0) - (a.order || 0)
+      if (orderDiff !== 0) return orderDiff
+      return parseDateStr(b.startDate || '') - parseDateStr(a.startDate || '')
+    })
     .map(proj => {
       const comp = companies.value.find(c => c.id === proj.companyId)
       return {

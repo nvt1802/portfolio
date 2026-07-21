@@ -21,8 +21,13 @@ const toastMessage = ref('')
 const expForm = ref({
   companyId: '',
   role: '',
-  startDate: '',
-  endDate: '',
+  startDate: '', // legacy
+  endDate: '', // legacy
+  startMonth: 1,
+  startYear: new Date().getFullYear(),
+  endMonth: 1,
+  endYear: new Date().getFullYear(),
+  isCurrent: false,
   description: '',
   order: 0
 })
@@ -37,11 +42,26 @@ const showToast = (msg: string) => {
 const saveExperience = async () => {
   isSavingExp.value = true
   try {
+    // Compute legacy dates for backwards compatibility / sorting
+    const sMonth = expForm.value.startMonth.toString().padStart(2, '0')
+    const computedStartDate = `${expForm.value.startYear}-${sMonth}`
+    
+    let computedEndDate = 'Present'
+    if (!expForm.value.isCurrent) {
+      const eMonth = expForm.value.endMonth.toString().padStart(2, '0')
+      computedEndDate = `${expForm.value.endYear}-${eMonth}`
+    }
+
     const dataToSave = {
       companyId: expForm.value.companyId,
       role: expForm.value.role,
-      startDate: expForm.value.startDate,
-      endDate: expForm.value.endDate,
+      startDate: computedStartDate,
+      endDate: computedEndDate,
+      startMonth: expForm.value.startMonth,
+      startYear: expForm.value.startYear,
+      endMonth: expForm.value.isCurrent ? null : expForm.value.endMonth,
+      endYear: expForm.value.isCurrent ? null : expForm.value.endYear,
+      isCurrent: expForm.value.isCurrent,
       description: expForm.value.description,
       order: expForm.value.order
     }
@@ -80,22 +100,42 @@ const saveExperience = async () => {
         <div class="form-group mb-5">
           <label class="form-label">Công ty / Tổ chức</label>
           <select v-model="expForm.companyId" class="form-control p-3 bg-black/20 text-white border border-white/10" required>
-            <option value="" disabled>-- Chọn công ty --</option>
-            <option v-for="comp in companies" :key="comp.id" :value="comp.id">{{ comp.name }}</option>
+            <option class="text-black" value="" disabled>-- Chọn công ty --</option>
+            <option class="text-black" v-for="comp in companies" :key="comp.id" :value="comp.id">{{ comp.name }}</option>
           </select>
         </div>
         <div class="form-group mb-5">
           <label class="form-label">Vị trí đảm nhận</label>
           <input v-model="expForm.role" type="text" class="form-control" placeholder="Ví dụ: Senior Developer" required />
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-5">
+          <!-- Start Date -->
           <div class="form-group">
-            <label class="form-label">Tháng bắt đầu</label>
-            <input v-model="expForm.startDate" type="text" class="form-control" placeholder="YYYY-MM (Ví dụ: 2019-06)" required />
+            <label class="form-label">Thời gian bắt đầu</label>
+            <div class="flex gap-3">
+              <select v-model="expForm.startMonth" class="form-control flex-1 p-3 bg-black/20 text-white border border-white/10" required>
+                <option class="text-black" v-for="m in 12" :key="m" :value="m">Tháng {{ m }}</option>
+              </select>
+              <input v-model.number="expForm.startYear" type="number" class="form-control flex-1" placeholder="Năm (VD: 2020)" required />
+            </div>
           </div>
+          
+          <!-- End Date -->
           <div class="form-group">
-            <label class="form-label">Tháng kết thúc</label>
-            <input v-model="expForm.endDate" type="text" class="form-control" placeholder="YYYY-MM hoặc Present" required />
+            <div class="flex justify-between items-center mb-2">
+              <label class="form-label mb-0">Thời gian kết thúc</label>
+              <label class="flex items-center gap-2 cursor-pointer text-[13px] text-gray-300">
+                <input v-model="expForm.isCurrent" type="checkbox" class="rounded border-gray-600 bg-black/20 text-[color:var(--cv-primary)]" />
+                Đến nay (Present)
+              </label>
+            </div>
+            <div class="flex gap-3" :class="{ 'opacity-50 pointer-events-none': expForm.isCurrent }">
+              <select v-model="expForm.endMonth" class="form-control flex-1 p-3 bg-black/20 text-white border border-white/10" :required="!expForm.isCurrent">
+                <option class="text-black" v-for="m in 12" :key="m" :value="m">Tháng {{ m }}</option>
+              </select>
+              <input v-model.number="expForm.endYear" type="number" class="form-control flex-1" placeholder="Năm (VD: 2024)" :required="!expForm.isCurrent" />
+            </div>
           </div>
         </div>
         <div class="form-group mb-5">
@@ -105,7 +145,7 @@ const saveExperience = async () => {
 
         <div class="form-group mb-6">
           <label class="form-label">Mô tả chi tiết công việc</label>
-          <textarea v-model="expForm.description" class="form-control" rows="6" placeholder="Nhập mô tả các nhiệm vụ và thành tựu..." required></textarea>
+          <RichTextEditor v-model="expForm.description" />
         </div>
         
         <div class="flex gap-4">
