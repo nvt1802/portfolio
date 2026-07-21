@@ -18,6 +18,12 @@ const db = useFirestore()
 const cvProfileRef = useDocument(doc(db, 'settings', 'cv_profile'))
 const personalInfo = useDocument(doc(db, 'settings', 'personal'))
 
+// Fetch CV Settings (for cvUrl)
+const cvSettings = useDocument(computed(() => {
+  if (!import.meta.client || !db) return null
+  return doc(db, 'settings', 'general')
+}))
+
 // State
 const experiences = ref<any[]>([])
 const projects = ref<any[]>([])
@@ -141,6 +147,17 @@ const printCv = () => {
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
         Print to PDF
       </button>
+      <a 
+        v-if="cvSettings && cvSettings.cvUrl" 
+        :href="cvSettings.cvUrl" 
+        target="_blank" 
+        class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white border-none py-2.5 px-4 rounded-md font-semibold cursor-pointer shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-all duration-200 no-underline"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+        </svg>
+        Download CV
+      </a>
       <NuxtLink to="/" class="flex items-center bg-white text-[#333] border border-gray-200 py-2.5 px-4 rounded-md no-underline font-medium shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)]">Back to Home</NuxtLink>
     </div>
 

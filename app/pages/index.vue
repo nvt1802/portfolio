@@ -157,12 +157,6 @@ const scrollToSection = (id: string) => {
           <template v-for="section in orderedSections" :key="'nav-' + section.id">
             <button v-if="section.id !== 'hero' && section.visible" @click="scrollToSection(section.id)" class="bg-transparent border-none text-[color:var(--text-secondary)] font-sans text-[15px] font-medium cursor-pointer transition-colors duration-200 hover:text-[color:var(--text-primary)]">{{ section.name }}</button>
           </template>
-          <NuxtLink to="/admin" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-[color:var(--border-color)] text-[color:var(--text-primary)] no-underline text-[14px] font-semibold border border-[color:var(--border-color)] transition-colors duration-200 hover:bg-white/10 hover:border-[color:var(--border-color-hover)]">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            Admin
-          </NuxtLink>
         </nav>
 
         <!-- Mobile Menu Toggle -->
@@ -177,12 +171,6 @@ const scrollToSection = (id: string) => {
         <template v-for="section in orderedSections" :key="'mob-nav-' + section.id">
           <button v-if="section.id !== 'hero' && section.visible" @click="scrollToSection(section.id); isMobileMenuOpen = false" class="text-left bg-transparent border-none text-[color:var(--text-secondary)] font-sans text-[16px] font-medium cursor-pointer py-2 px-4 hover:bg-white/5 rounded-lg">{{ section.name }}</button>
         </template>
-        <NuxtLink to="/admin" class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-[color:var(--primary)] text-white font-semibold mt-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          Admin Panel
-        </NuxtLink>
       </div>
     </header>
 
@@ -356,7 +344,6 @@ const scrollToSection = (id: string) => {
       <div class="container flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
         <p class="text-[color:var(--text-secondary)] text-[14px]">&copy; {{ new Date().getFullYear() }} Personal Portfolio. All rights reserved.</p>
         <div class="flex gap-6">
-          <NuxtLink to="/admin" class="text-[color:var(--text-muted)] no-underline text-[14px] hover:text-[color:var(--text-primary)]">Admin Panel</NuxtLink>
         </div>
       </div>
     </footer>
