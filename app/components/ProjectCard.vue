@@ -18,7 +18,7 @@ defineProps<{
 
 <template>
   <div class="flex flex-col h-full overflow-hidden bg-[color:var(--glass-bg)] backdrop-blur-[12px] border border-[color:var(--glass-border)] rounded-2xl p-0 transition-all duration-300 hover:-translate-y-2 hover:border-[color:var(--border-color-hover)] hover:shadow-[0_15px_40px_-10px_rgba(0,0,0,0.6),0_0_25px_0_var(--primary-glow)] group">
-    <div class="relative w-full pt-[56.25%] bg-white/2 overflow-hidden border-b border-[color:var(--border-color)]">
+    <div class="relative w-full h-40 sm:h-48 bg-white/2 overflow-hidden border-b border-[color:var(--border-color)]">
       <NuxtImg 
         v-if="project.imageUrl" 
         :src="project.imageUrl" 
