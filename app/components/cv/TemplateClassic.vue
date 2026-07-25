@@ -136,39 +136,40 @@ const formatDateRange = (item: any) => {
       <!-- PROJECTS Section -->
       <section v-if="filteredProjects.length > 0" class="mb-5">
         <h3 class="text-[14px] font-extrabold text-[color:var(--cv-primary)] uppercase tracking-wide m-0 mb-2 border-b-2 border-[color:var(--cv-primary)] pb-1">PROJECTS</h3>
-        <div class="space-y-5 text-[12px] text-black">
-          <div v-for="proj in filteredProjects" :key="proj.id">
-            <div class="font-bold text-[13px] mb-0.5">{{ proj.title }}</div>
-            <div class="mb-1.5" v-if="formatDateRange(proj)">({{ formatDateRange(proj) }})</div>
+        <div class="space-y-4 text-[12px] text-black">
+          <div v-for="proj in filteredProjects" :key="proj.id" class="border-b border-black/10 pb-4 last:border-0 last:pb-0">
+            <!-- Header: Title | Company -->
+            <div class="mb-0.5">
+              <span class="font-bold text-[13px]">{{ proj.title }}</span>
+              <span v-if="proj.companyName"> | <span class="italic">{{ proj.companyName }}</span></span>
+            </div>
             
-            <table class="w-full border-collapse border border-black text-[12px]">
-              <tbody>
-                <tr v-if="proj.client || proj.companyName" class="border-b border-black">
-                  <td class="border-r border-black p-1.5 font-bold w-[25%] align-top">Customer</td>
-                  <td class="p-1.5 align-top">{{ proj.client || proj.companyName }}</td>
-                </tr>
-                <tr v-if="proj.description" class="border-b border-black">
-                  <td class="border-r border-black p-1.5 font-bold w-[25%] align-top">Description</td>
-                  <td class="p-1.5 align-top leading-relaxed [&>ul]:m-0 [&>ul]:pl-3 [&>ul>li]:mb-0.5" v-html="proj.description"></td>
-                </tr>
-                <tr v-if="proj.teamSize" class="border-b border-black">
-                  <td class="border-r border-black p-1.5 font-bold w-[25%] align-top">Team size</td>
-                  <td class="p-1.5 align-top">{{ proj.teamSize }}</td>
-                </tr>
-                <tr v-if="proj.role" class="border-b border-black">
-                  <td class="border-r border-black p-1.5 font-bold w-[25%] align-top">My position</td>
-                  <td class="p-1.5 align-top">{{ proj.role }}</td>
-                </tr>
-                <tr v-if="proj.workDone" class="border-b border-black">
-                  <td class="border-r border-black p-1.5 font-bold w-[25%] align-top">My responsibilities</td>
-                  <td class="p-1.5 align-top leading-relaxed [&>ul]:m-0 [&>ul]:pl-0 [&>ul>li]:list-none [&>ul>li]:before:content-['-'] [&>ul>li]:before:mr-1.5 [&>ul>li]:mb-0.5" v-html="proj.workDone"></td>
-                </tr>
-                <tr v-if="proj.techStack && proj.techStack.length > 0">
-                  <td class="border-r border-black p-1.5 font-bold w-[25%] align-top">Technologies used</td>
-                  <td class="p-1.5 align-top">{{ proj.techStack.join(', ') }}</td>
-                </tr>
-              </tbody>
-            </table>
+            <!-- Subtitle: Role (Dates) -->
+            <div class="mb-2">
+              <span v-if="proj.role" class="italic">{{ proj.role }}</span>
+              <span v-if="formatDateRange(proj)" :class="{ 'ml-1': proj.role }">({{ formatDateRange(proj) }})</span>
+            </div>
+            
+            <!-- Details List -->
+            <ul class="list-[circle] pl-5 m-0 space-y-1">
+              <!-- Description -->
+              <li v-if="proj.description || proj.teamSize" class="[&_p]:inline">
+                <strong>Description:</strong> 
+                <span v-if="proj.description" v-html="proj.description" class="ml-1"></span>
+                <span v-if="proj.teamSize" class="ml-1">Team size: {{ proj.teamSize }}.</span>
+              </li>
+              
+              <!-- Responsibilities -->
+              <li v-if="proj.workDone" class="[&_ul]:list-[circle] [&_ul]:pl-5 [&_ul]:mt-1 [&_ul_li]:mb-0.5 [&_p]:inline">
+                <strong>Responsibilities & Achievements:</strong>
+                <div v-html="proj.workDone" class="mt-1"></div>
+              </li>
+              
+              <!-- Technologies -->
+              <li v-if="proj.techStack && proj.techStack.length > 0">
+                <strong>Technologies:</strong> {{ proj.techStack.join(', ') }}
+              </li>
+            </ul>
           </div>
         </div>
       </section>
