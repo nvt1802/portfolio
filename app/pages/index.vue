@@ -67,6 +67,11 @@ const skills = useCollection<Skill>(computed(() => {
   return query(collection(db, 'skills'), orderBy('order', 'asc')) as Query<Skill>
 }))
 
+const skillCategories = useCollection(computed(() => {
+  if (!import.meta.client || !db) return null
+  return query(collection(db, 'skill_categories'), orderBy('order', 'asc'))
+}))
+
 const cvSettings = useDocument(computed(() => {
   if (!import.meta.client || !db) return null
   return doc(db, 'settings', 'general')
@@ -122,11 +127,43 @@ useSeoMeta({
   twitterCard: 'summary_large_image',
 })
 
-// Group skills by category
-const frontendSkills = computed(() => skills.value.filter(s => s.category === 'frontend'))
-const backendSkills = computed(() => skills.value.filter(s => s.category === 'backend'))
-const toolsSkills = computed(() => skills.value.filter(s => s.category === 'tools'))
-const aiSkills = computed(() => skills.value.filter(s => s.category === 'ai-automation'))
+// Group skills by dynamic category, maintaining order from skill_categories
+const groupedSkills = computed(() => {
+  const legacyMap: Record<string, string> = {
+    'frontend': 'Frontend Development',
+    'backend': 'Backend Development',
+    'tools': 'Tools & DevOps',
+    'ai-automation': 'AI & Automation'
+  }
+  
+  const result: Record<string, any[]> = {}
+  
+  // 1. Process managed categories first (these maintain order from Firebase)
+  if (skillCategories.value && skills.value) {
+    skillCategories.value.forEach(cat => {
+      const catSkills = skills.value!.filter(s => s.category === cat.name || s.category === cat.id)
+      if (catSkills.length > 0) {
+        result[cat.name] = catSkills
+      }
+    })
+    
+    // 2. Process any remaining skills not in managed categories (legacy/unassigned)
+    const knownNames = skillCategories.value.map(c => c.name)
+    skills.value.forEach(skill => {
+      const rawCat = skill.category || 'Other'
+      // If this skill's category wasn't in our managed list
+      if (!knownNames.includes(rawCat)) {
+        const catName = legacyMap[rawCat] || rawCat
+        if (!result[catName]) {
+          result[catName] = []
+        }
+        result[catName].push(skill)
+      }
+    })
+  }
+
+  return result
+})
 
 const isMobileMenuOpen = ref(false)
 
@@ -219,11 +256,11 @@ const scrollToSection = (id: string) => {
         </div>
 
         <div class="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-6">
-          <!-- Category: Frontend -->
-          <div class="glass-card p-6 sm:p-8 flex flex-col items-center">
-            <h3 class="text-[18px] font-bold mb-6 text-center text-white border-b border-[color:var(--border-color)] pb-2.5 w-full">Frontend Development</h3>
-            <div class="flex flex-wrap justify-center gap-4 sm:gap-6" v-if="frontendSkills.filter(s => s.displayType !== 'text').length > 0">
-              <div v-for="skill in frontendSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="flex flex-col items-center group">
+          <!-- Dynamic Categories Loop -->
+          <div v-for="(catSkills, categoryName) in groupedSkills" :key="categoryName" class="glass-card p-6 sm:p-8 flex flex-col items-center">
+            <h3 class="text-[18px] font-bold mb-6 text-center text-white border-b border-[color:var(--border-color)] pb-2.5 w-full">{{ categoryName }}</h3>
+            <div class="flex flex-wrap justify-center gap-4 sm:gap-6" v-if="catSkills.filter(s => s.displayType !== 'text').length > 0">
+              <div v-for="skill in catSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="flex flex-col items-center group">
                 <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 border border-white/10 flex justify-center items-center mb-2.5 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-2 group-hover:scale-110 group-hover:bg-white/10 group-hover:border-white/20 group-hover:shadow-[0_10px_20px_-5px_rgba(0,0,0,0.3)]">
                   <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="max-w-[60%] max-h-[60%] object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] transition-transform duration-300 group-hover:scale-110" />
                   <span v-else class="text-[20px] font-bold text-[color:var(--primary)]">{{ skill.name.charAt(0) }}</span>
@@ -231,72 +268,11 @@ const scrollToSection = (id: string) => {
                 <div class="text-[12px] sm:text-[13px] font-medium text-[color:var(--text-secondary)] text-center transition-colors duration-300 group-hover:text-white">{{ skill.name }}</div>
               </div>
             </div>
-            <div v-if="frontendSkills.filter(s => s.displayType === 'text').length > 0" class="mt-6 flex flex-col gap-4 text-left px-4 w-full">
-              <div v-for="skill in frontendSkills.filter(s => s.displayType === 'text')" :key="skill.id">
+            <div v-if="catSkills.filter(s => s.displayType === 'text').length > 0" class="mt-6 flex flex-col gap-4 text-left px-4 w-full">
+              <div v-for="skill in catSkills.filter(s => s.displayType === 'text')" :key="skill.id">
                 <div class="whitespace-pre-wrap text-[14px] text-[color:var(--text-secondary)] leading-[1.6]">{{ skill.description }}</div>
               </div>
             </div>
-            <div v-if="frontendSkills.length === 0" class="text-center text-[color:var(--text-secondary)] mt-2.5">Updating...</div>
-          </div>
-
-          <!-- Category: Backend -->
-          <div class="glass-card p-6 sm:p-8 flex flex-col items-center">
-            <h3 class="text-[18px] font-bold mb-6 text-center text-white border-b border-[color:var(--border-color)] pb-2.5 w-full">Backend Development</h3>
-            <div class="flex flex-wrap justify-center gap-4 sm:gap-6" v-if="backendSkills.filter(s => s.displayType !== 'text').length > 0">
-              <div v-for="skill in backendSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="flex flex-col items-center group">
-                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 border border-white/10 flex justify-center items-center mb-2.5 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-2 group-hover:scale-110 group-hover:bg-white/10 group-hover:border-white/20 group-hover:shadow-[0_10px_20px_-5px_rgba(0,0,0,0.3)]">
-                  <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="max-w-[60%] max-h-[60%] object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] transition-transform duration-300 group-hover:scale-110" />
-                  <span v-else class="text-[20px] font-bold text-[color:var(--primary)]">{{ skill.name.charAt(0) }}</span>
-                </div>
-                <div class="text-[12px] sm:text-[13px] font-medium text-[color:var(--text-secondary)] text-center transition-colors duration-300 group-hover:text-white">{{ skill.name }}</div>
-              </div>
-            </div>
-            <div v-if="backendSkills.filter(s => s.displayType === 'text').length > 0" class="mt-6 flex flex-col gap-4 text-left px-4 w-full">
-              <div v-for="skill in backendSkills.filter(s => s.displayType === 'text')" :key="skill.id">
-                <div class="whitespace-pre-wrap text-[14px] text-[color:var(--text-secondary)] leading-[1.6]">{{ skill.description }}</div>
-              </div>
-            </div>
-            <div v-if="backendSkills.length === 0" class="text-center text-[color:var(--text-secondary)] mt-2.5">Updating...</div>
-          </div>
-
-          <!-- Category: AI & Automation -->
-          <div class="glass-card p-6 sm:p-8 flex flex-col items-center">
-            <h3 class="text-[18px] font-bold mb-6 text-center text-white border-b border-[color:var(--border-color)] pb-2.5 w-full">AI & Automation</h3>
-            <div class="flex flex-wrap justify-center gap-4 sm:gap-6" v-if="aiSkills.filter(s => s.displayType !== 'text').length > 0">
-              <div v-for="skill in aiSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="flex flex-col items-center group">
-                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 border border-white/10 flex justify-center items-center mb-2.5 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-2 group-hover:scale-110 group-hover:bg-white/10 group-hover:border-white/20 group-hover:shadow-[0_10px_20px_-5px_rgba(0,0,0,0.3)]">
-                  <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="max-w-[60%] max-h-[60%] object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] transition-transform duration-300 group-hover:scale-110" />
-                  <span v-else class="text-[20px] font-bold text-[color:var(--primary)]">{{ skill.name.charAt(0) }}</span>
-                </div>
-                <div class="text-[12px] sm:text-[13px] font-medium text-[color:var(--text-secondary)] text-center transition-colors duration-300 group-hover:text-white">{{ skill.name }}</div>
-              </div>
-            </div>
-            <div v-if="aiSkills.filter(s => s.displayType === 'text').length > 0" class="mt-6 flex flex-col gap-4 text-left px-4 w-full">
-              <div v-for="skill in aiSkills.filter(s => s.displayType === 'text')" :key="skill.id">
-                <div class="whitespace-pre-wrap text-[14px] text-[color:var(--text-secondary)] leading-[1.6]">{{ skill.description }}</div>
-              </div>
-            </div>
-            <div v-if="aiSkills.length === 0" class="text-center text-[color:var(--text-secondary)] mt-2.5">Updating...</div>
-          </div>
-
-          <!-- Category: Tools & DevOps -->
-          <div class="glass-card p-6 sm:p-8 flex flex-col items-center">
-            <h3 class="text-[18px] font-bold mb-6 text-center text-white border-b border-[color:var(--border-color)] pb-2.5 w-full">Tools & DevOps</h3>
-            <div class="flex flex-wrap justify-center gap-4 sm:gap-6" v-if="toolsSkills.filter(s => s.displayType !== 'text').length > 0">
-              <div v-for="skill in toolsSkills.filter(s => s.displayType !== 'text')" :key="skill.id" class="flex flex-col items-center group">
-                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 border border-white/10 flex justify-center items-center mb-2.5 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-2 group-hover:scale-110 group-hover:bg-white/10 group-hover:border-white/20 group-hover:shadow-[0_10px_20px_-5px_rgba(0,0,0,0.3)]">
-                  <NuxtImg v-if="skill.iconUrl" :src="skill.iconUrl" :alt="skill.name" class="max-w-[60%] max-h-[60%] object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] transition-transform duration-300 group-hover:scale-110" />
-                  <span v-else class="text-[20px] font-bold text-[color:var(--primary)]">{{ skill.name.charAt(0) }}</span>
-                </div>
-                <div class="text-[12px] sm:text-[13px] font-medium text-[color:var(--text-secondary)] text-center transition-colors duration-300 group-hover:text-white">{{ skill.name }}</div>
-              </div>
-            </div>
-            <div v-if="toolsSkills.filter(s => s.displayType === 'text').length > 0" class="mt-6 flex flex-col gap-4 text-left px-4 w-full">
-              <div v-for="skill in toolsSkills.filter(s => s.displayType === 'text')" :key="skill.id">
-                <div class="whitespace-pre-wrap text-[14px] text-[color:var(--text-secondary)] leading-[1.6]">{{ skill.description }}</div>
-              </div>
-            </div>
-            <div v-if="toolsSkills.length === 0" class="text-center text-[color:var(--text-secondary)] mt-2.5">Updating...</div>
           </div>
         </div>
       </div>

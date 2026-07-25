@@ -23,23 +23,24 @@ const showToast = (msg: string) => {
 }
 
 // --- Tabs Configuration ---
-const activeTab = ref<'personal' | 'companies' | 'experiences' | 'projects' | 'skills'>('personal')
+const activeTab = ref<'personal' | 'companies' | 'experiences' | 'projects' | 'skill_categories' | 'skills'>('personal')
 const tabs = [
   { id: 'personal', name: 'Cá nhân' },
   { id: 'companies', name: 'Công ty' },
   { id: 'experiences', name: 'Kinh nghiệm' },
   { id: 'projects', name: 'Dự án' },
+  { id: 'skill_categories', name: 'Danh mục Kỹ năng' },
   { id: 'skills', name: 'Kỹ năng' }
 ] as const
 
 // Watch query parameters to update active tab
 watch(() => route.query.tab, (newTab) => {
-  if (newTab && ['personal', 'companies', 'experiences', 'projects', 'skills'].includes(newTab as string)) {
+  if (newTab && ['personal', 'companies', 'experiences', 'projects', 'skill_categories', 'skills'].includes(newTab as string)) {
     activeTab.value = newTab as any
   }
 }, { immediate: true })
 
-const changeTab = (tabId: 'personal' | 'companies' | 'experiences' | 'projects' | 'skills') => {
+const changeTab = (tabId: 'personal' | 'companies' | 'experiences' | 'projects' | 'skill_categories' | 'skills') => {
   activeTab.value = tabId
   router.push({ query: { tab: tabId } })
 }
@@ -190,10 +191,85 @@ const saveProjectsOrder = async () => {
 // ==========================================
 // 4. TAB: SKILLS CRUD
 // ==========================================
+interface SkillCategory {
+  id: string
+  name: string
+  order: number
+}
+
+const skillCategories = useCollection<SkillCategory>(computed(() => {
+  if (!import.meta.client || !db) return null
+  return query(collection(db, 'skill_categories'), orderBy('order', 'asc'))
+}))
+
+const deleteSkillCategory = (id: string) => {
+  triggerConfirm('Bạn có chắc chắn muốn xóa danh mục này?', async () => {
+    try {
+      await deleteDoc(doc(db, 'skill_categories', id))
+      showToast('Xóa danh mục thành công!')
+    } catch (error: any) {
+      console.error(error)
+      showToast(`Xóa thất bại: ${error.message || error}`)
+    }
+  })
+}
+
+// Drag logic for Skill Categories
+const isCategorySortMode = ref(false)
+const sortableCategories = ref<SkillCategory[]>([])
+const categoryDraggedIndex = ref<number | null>(null)
+
+const toggleCategorySortMode = () => {
+  if (!isCategorySortMode.value && skillCategories.value) {
+    sortableCategories.value = JSON.parse(JSON.stringify(skillCategories.value))
+  }
+  isCategorySortMode.value = !isCategorySortMode.value
+}
+
+const onCategoryDragStart = (index: number) => {
+  categoryDraggedIndex.value = index
+}
+
+const onCategoryDragEnter = (index: number) => {
+  if (categoryDraggedIndex.value === null || categoryDraggedIndex.value === index) return
+  const draggedItem = sortableCategories.value[categoryDraggedIndex.value]
+  sortableCategories.value.splice(categoryDraggedIndex.value, 1)
+  sortableCategories.value.splice(index, 0, draggedItem)
+  categoryDraggedIndex.value = index
+}
+
+const onCategoryDragEnd = () => {
+  categoryDraggedIndex.value = null
+}
+
+const isSavingCategoryOrder = ref(false)
+const saveCategoryOrder = async () => {
+  if (!sortableCategories.value.length) return
+  isSavingCategoryOrder.value = true
+  try {
+    const batch = writeBatch(db)
+    sortableCategories.value.forEach((cat, index) => {
+      const catRef = doc(db, 'skill_categories', cat.id)
+      batch.update(catRef, { order: index + 1 })
+    })
+    await batch.commit()
+    showToast('Đã lưu thứ tự danh mục!')
+    isCategorySortMode.value = false
+  } catch (error: any) {
+    console.error(error)
+    showToast(`Lỗi khi lưu thứ tự: ${error.message}`)
+  } finally {
+    isSavingCategoryOrder.value = false
+  }
+}
+
+// ==========================================
+// 5. TAB: SKILLS CRUD
+// ==========================================
 interface Skill {
   id: string
   name: string
-  category: 'frontend' | 'backend' | 'tools' | 'ai-automation'
+  category: string
   displayType?: 'icon' | 'text'
   order: number
   iconUrl?: string
@@ -218,12 +294,6 @@ const deleteSkill = (id: string) => {
 }
 
 // Helpers
-const categoriesMap: Record<string, string> = {
-  'frontend': 'Frontend',
-  'backend': 'Backend',
-  'tools': 'Tools/DevOps',
-  'ai-automation': 'AI Agent & Automation'
-}
 
 const currentTabName = computed(() => {
   const found = tabs.find(t => t.id === activeTab.value)
@@ -567,6 +637,81 @@ const savePersonalInfo = async () => {
         </div>
       </div>
 
+      <!-- ==================== TAB: SKILL CATEGORIES ==================== -->
+      <div v-if="activeTab === 'skill_categories'">
+        <div class="flex justify-between items-center mb-5">
+          <h3 class="text-[20px] font-bold">Danh mục Kỹ năng</h3>
+          <div class="flex gap-2">
+            <button v-if="!isCategorySortMode && skillCategories && skillCategories.length > 0" @click="toggleCategorySortMode" class="btn bg-black/30 border border-white/10 hover:bg-white/10">
+              Sắp xếp
+            </button>
+            <button v-else-if="isCategorySortMode" @click="toggleCategorySortMode" class="btn bg-black/30 border border-white/10 hover:bg-white/10">
+              Hủy
+            </button>
+            <NuxtLink v-if="!isCategorySortMode" to="/admin/skill_categories/new" class="btn btn-primary no-underline">
+              + Thêm danh mục
+            </NuxtLink>
+            <button v-if="isCategorySortMode" @click="saveCategoryOrder" class="btn btn-primary" :disabled="isSavingCategoryOrder">
+              {{ isSavingCategoryOrder ? 'Đang lưu...' : 'Lưu thứ tự' }}
+            </button>
+          </div>
+        </div>
+
+        <div v-if="isCategorySortMode" class="glass-card p-6 mb-5">
+          <p class="text-[color:var(--text-secondary)] mb-4 text-sm"><span class="font-bold text-white">Hướng dẫn:</span> Kéo thả để thay đổi thứ tự. Nhấn "Lưu thứ tự" khi hoàn tất.</p>
+          <div class="flex flex-col gap-2">
+            <div
+              v-for="(cat, index) in sortableCategories"
+              :key="cat.id"
+              draggable="true"
+              @dragstart="onCategoryDragStart(index)"
+              @dragenter.prevent="onCategoryDragEnter(index)"
+              @dragover.prevent
+              @dragend="onCategoryDragEnd"
+              class="flex items-center gap-4 bg-black/20 p-3 rounded-md border border-[color:var(--border-color)] cursor-move hover:border-[color:var(--cv-primary)] hover:bg-white/5 transition-colors"
+              :class="{ 'opacity-50 border-dashed': categoryDraggedIndex === index }"
+            >
+              <div class="text-[color:var(--text-muted)]">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+              </div>
+              <div class="font-semibold flex-1">{{ cat.name }}</div>
+              <div class="text-sm text-[color:var(--text-secondary)]">Thứ tự hiện tại: {{ cat.order || 0 }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div v-show="!isCategorySortMode" class="glass-card p-0 overflow-x-auto">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Tên danh mục</th>
+                <th>Thứ tự</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="cat in skillCategories" :key="cat.id">
+                <td class="font-semibold">{{ cat.name }}</td>
+                <td>{{ cat.order || 0 }}</td>
+                <td class="actions-cell">
+                  <div class="actions-wrapper">
+                    <NuxtLink :to="`/admin/skill_categories/${cat.id}`" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-white/5 bg-black/20 cursor-pointer transition-all duration-200 text-[color:var(--text-secondary)] hover:bg-blue-500/15 hover:border-blue-500/30 hover:text-blue-500 hover:-translate-y-0.5" title="Chỉnh sửa">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    </NuxtLink>
+                    <button @click="deleteSkillCategory(cat.id)" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-white/5 bg-black/20 cursor-pointer transition-all duration-200 text-[color:var(--text-secondary)] hover:bg-red-500/15 hover:border-red-500/30 hover:text-red-500 hover:-translate-y-0.5" title="Xóa">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr v-if="skillCategories && skillCategories.length === 0">
+                <td colspan="3" class="text-center text-[color:var(--text-muted)] p-10">Chưa có dữ liệu danh mục.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- ==================== TAB: SKILLS ==================== -->
       <div v-if="activeTab === 'skills'">
         <div class="flex justify-between items-center mb-5">
@@ -599,8 +744,8 @@ const savePersonalInfo = async () => {
                 </td>
                 <td class="font-semibold">{{ skill.name }}</td>
                 <td>
-                  <span class="badge" :class="skill.category === 'frontend' || skill.category === 'ai-automation' ? 'badge-primary' : 'badge-accent'">
-                    {{ categoriesMap[skill.category] }}
+                  <span class="badge badge-primary">
+                    {{ skill.category }}
                   </span>
                 </td>
                 <td>

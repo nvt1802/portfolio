@@ -107,7 +107,7 @@ const formatDateRange = (item: any) => {
                     - {{ categorySkills.filter(s => s.displayType !== 'text').map(s => s.name).join(', ') }}
                   </div>
                   <div v-for="skill in categorySkills.filter(s => s.displayType === 'text')" :key="skill.id" class="whitespace-pre-wrap leading-relaxed">
-                    <span v-if="!skill.description.trim().startsWith('-')">- </span>{{ skill.description }}
+                    <span v-if="skill.description && !skill.description.trim().startsWith('-')">- </span>{{ skill.description }}
                   </div>
                 </td>
               </tr>
@@ -153,10 +153,14 @@ const formatDateRange = (item: any) => {
             <!-- Details List -->
             <ul class="list-[circle] pl-5 m-0 space-y-1">
               <!-- Description -->
-              <li v-if="proj.description || proj.teamSize" class="[&_p]:inline">
+              <li v-if="proj.description" class="[&_p]:inline">
                 <strong>Description:</strong> 
-                <span v-if="proj.description" v-html="proj.description" class="ml-1"></span>
-                <span v-if="proj.teamSize" class="ml-1">Team size: {{ proj.teamSize }}.</span>
+                <span v-html="proj.description" class="ml-1"></span>
+              </li>
+              
+              <!-- Team Size -->
+              <li v-if="proj.teamSize" class="[&_p]:inline">
+                <strong>Team size:</strong> {{ proj.teamSize }}
               </li>
               
               <!-- Responsibilities -->

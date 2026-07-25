@@ -97,7 +97,7 @@ const formatPeriod = (start: string, end: string) => {
           
           <h3 class="text-[17px] sm:text-[18px] font-bold mb-1.5 sm:mb-1.5">{{ item.role }}</h3>
           <div class="hidden sm:block text-[14px] text-[color:var(--text-secondary)] mb-3">{{ item.company }}</div>
-          <p class="text-[14px] sm:text-[15px] text-[color:var(--text-secondary)] whitespace-pre-wrap leading-[1.6]">{{ item.description }}</p>
+          <div class="text-[14px] sm:text-[15px] text-[color:var(--text-secondary)] leading-[1.6] [&>ul]:list-disc [&>ul]:pl-5 [&>ul>li]:mb-1 [&>ol]:list-decimal [&>ol]:pl-5 [&>p]:mb-2 last:[&>p]:mb-0" v-html="item.description"></div>
         </div>
       </div>
     </div>

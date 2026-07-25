@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { doc, collection, getDocs } from 'firebase/firestore'
-import { useFirestore, useDocument } from 'vuefire'
+import { doc, collection, query, orderBy } from 'firebase/firestore'
+import { useFirestore, useDocument, useCollection } from 'vuefire'
 import TemplateClassic from '~/components/cv/TemplateClassic.vue'
 import TemplateModern from '~/components/cv/TemplateModern.vue'
 import TemplateMinimal from '~/components/cv/TemplateMinimal.vue'
@@ -24,43 +24,39 @@ const cvSettings = useDocument(computed(() => {
   return doc(db, 'settings', 'general')
 }))
 
-// State
-const experiences = ref<any[]>([])
-const projects = ref<any[]>([])
-const skills = ref<any[]>([])
-const companies = ref<any[]>([])
+// Fetch all collections using vuefire useCollection for reactivity and SSR support
+const rawExperiences = useCollection(computed(() => db ? collection(db, 'experiences') : null))
+const rawProjects = useCollection(computed(() => db ? collection(db, 'projects') : null))
+const rawSkills = useCollection(computed(() => db ? collection(db, 'skills') : null))
+const rawCompanies = useCollection(computed(() => db ? collection(db, 'companies') : null))
+const skillCategories = useCollection(computed(() => db ? query(collection(db, 'skill_categories'), orderBy('order', 'asc')) : null))
 
-const isLoading = ref(true)
-
-// Fetch all collections on mount
-onMounted(async () => {
-  try {
-    const [expSnap, projSnap, skillSnap, compSnap] = await Promise.all([
-      getDocs(collection(db, 'experiences')),
-      getDocs(collection(db, 'projects')),
-      getDocs(collection(db, 'skills')),
-      getDocs(collection(db, 'companies'))
-    ])
-
-    experiences.value = expSnap.docs.map(d => ({ id: d.id, ...d.data() }))
-    projects.value = projSnap.docs.map(d => ({ id: d.id, ...d.data() }))
-    skills.value = skillSnap.docs.map(d => ({ id: d.id, ...d.data() }))
-    companies.value = compSnap.docs.map(d => ({ id: d.id, ...d.data() }))
-  } catch (error) {
-    console.error("Error fetching CV data:", error)
-  } finally {
-    isLoading.value = false
-  }
+const isLoading = computed(() => {
+  return rawExperiences.pending.value || rawProjects.pending.value || rawSkills.pending.value
 })
 
 // Computed filtered data
 const filteredExperiences = computed(() => {
-  if (!cvProfileRef.value || !cvProfileRef.value.selectedExperiences) return []
-  return experiences.value
-    .filter(e => cvProfileRef.value!.selectedExperiences.includes(e.id))
+  if (!rawExperiences.value) return []
+  let selected = cvProfileRef.value?.selectedExperiences
+  let source = rawExperiences.value
+  
+  if (selected && Array.isArray(selected) && selected.length > 0) {
+    source = source.filter(e => selected.includes(e.id))
+  } else if (selected && Array.isArray(selected) && selected.length === 0) {
+    // If explicitly saved as empty array, don't show any (or maybe show all by default if user is confused? Let's show all if empty for better UX)
+    // Actually, if it's empty, let's just show all.
+  }
+  
+  // Show all if selected is missing or empty array
+  if (!selected || (Array.isArray(selected) && selected.length === 0)) {
+    source = rawExperiences.value
+  }
+
+  return source
     .sort((a, b) => (b.order || 0) - (a.order || 0))
     .map(exp => {
-      const comp = companies.value.find(c => c.id === exp.companyId)
+      const comp = rawCompanies.value?.find(c => c.id === exp.companyId)
       return {
         ...exp,
         company: comp ? comp.name : (exp.company || ''),
@@ -89,16 +85,24 @@ const parseDateStr = (dateStr: string) => {
 }
 
 const filteredProjects = computed(() => {
-  if (!cvProfileRef.value || !cvProfileRef.value.selectedProjects) return []
-  return projects.value
-    .filter(p => cvProfileRef.value!.selectedProjects.includes(p.id))
+  if (!rawProjects.value) return []
+  let selected = cvProfileRef.value?.selectedProjects
+  let source = rawProjects.value
+  
+  if (!selected || (Array.isArray(selected) && selected.length === 0)) {
+    source = rawProjects.value
+  } else {
+    source = source.filter(p => selected.includes(p.id))
+  }
+
+  return source
     .sort((a, b) => {
       const orderDiff = (b.order || 0) - (a.order || 0)
       if (orderDiff !== 0) return orderDiff
       return parseDateStr(b.startDate || '') - parseDateStr(a.startDate || '')
     })
     .map(proj => {
-      const comp = companies.value.find(c => c.id === proj.companyId)
+      const comp = rawCompanies.value?.find(c => c.id === proj.companyId)
       return {
         ...proj,
         companyName: comp ? comp.name : (proj.companyId ? '' : 'Personal Project')
@@ -107,31 +111,55 @@ const filteredProjects = computed(() => {
 })
 
 const filteredSkills = computed(() => {
-  if (!cvProfileRef.value || !cvProfileRef.value.selectedSkills) return []
-  return skills.value
-    .filter(s => cvProfileRef.value!.selectedSkills.includes(s.id))
+  if (!rawSkills.value) return []
+  let selected = cvProfileRef.value?.selectedSkills
+  let source = rawSkills.value
+  
+  if (!selected || (Array.isArray(selected) && selected.length === 0)) {
+    source = rawSkills.value
+  } else {
+    source = source.filter(s => selected.includes(s.id))
+  }
+
+  return source
     .sort((a, b) => (a.order || 0) - (b.order || 0))
 })
 
+// Group skills by dynamic category, maintaining order from skill_categories
 const groupedSkills = computed(() => {
-  const groups: Record<string, any[]> = {}
-  
-  const categoryNames: Record<string, string> = {
+  const legacyMap: Record<string, string> = {
     'frontend': 'Frontend',
     'backend': 'Backend',
-    'tools': 'Tools',
+    'tools': 'Tools & DevOps',
     'ai-automation': 'AI Agent & Automation'
   }
   
-  filteredSkills.value.forEach(skill => {
-    const groupName = categoryNames[skill.category] || skill.category
-    if (!groups[groupName]) {
-      groups[groupName] = []
-    }
-    groups[groupName].push(skill)
-  })
+  const result: Record<string, any[]> = {}
   
-  return groups
+  // 1. Process managed categories first
+  if (skillCategories.value && filteredSkills.value) {
+    skillCategories.value.forEach(cat => {
+      const catSkills = filteredSkills.value.filter(s => s.category === cat.name || s.category === cat.id)
+      if (catSkills.length > 0) {
+        result[cat.name] = catSkills
+      }
+    })
+    
+    // 2. Process any remaining skills not in managed categories
+    const knownNames = skillCategories.value.map(c => c.name)
+    filteredSkills.value.forEach(skill => {
+      const rawCat = skill.category || 'Other'
+      if (!knownNames.includes(rawCat)) {
+        const catName = legacyMap[rawCat] || rawCat
+        if (!result[catName]) {
+          result[catName] = []
+        }
+        result[catName].push(skill)
+      }
+    })
+  }
+
+  return result
 })
 
 const printCv = () => {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { ref, onMounted, computed } from 'vue'
+import { doc, getDoc, updateDoc, collection } from 'firebase/firestore'
+import { useFirestore, useCollection } from 'vuefire'
 
 useHead({ title: 'Chỉnh Sửa Kỹ Năng' })
 
@@ -20,11 +20,17 @@ const toastMessage = ref('')
 
 const skillForm = ref({
   name: '',
-  category: 'frontend' as 'frontend' | 'backend' | 'tools' | 'ai-automation',
+  category: 'Frontend',
   displayType: 'icon' as 'icon' | 'text',
   order: 0,
   iconUrl: '',
   description: ''
+})
+
+const skillCategories = useCollection(collection(db, 'skill_categories'))
+const existingCategories = computed(() => {
+  if (!skillCategories.value) return []
+  return [...skillCategories.value].sort((a, b) => a.order - b.order)
 })
 
 const showToast = (msg: string) => {
@@ -42,7 +48,7 @@ onMounted(async () => {
       const data = docSnap.data()
       skillForm.value = {
         name: data.name || '',
-        category: data.category || 'frontend',
+        category: data.category || 'Frontend',
         displayType: data.displayType || 'icon',
         order: data.order || 0,
         iconUrl: data.iconUrl || '',
@@ -109,12 +115,19 @@ const saveSkill = async () => {
         </div>
         <div class="form-group mb-5">
           <label class="form-label">Phân loại danh mục</label>
-          <select v-model="skillForm.category" class="form-control p-3 bg-black/20 text-white border border-white/10" required>
-            <option value="frontend">Frontend</option>
-            <option value="backend">Backend</option>
-            <option value="tools">Tools/DevOps</option>
-            <option value="ai-automation">AI Agent & Automation</option>
+          <select 
+            v-model="skillForm.category" 
+            class="form-control" 
+            required 
+          >
+            <option value="" disabled class="bg-[#13111C] text-white">-- Chọn một danh mục --</option>
+            <option v-for="cat in existingCategories" :key="cat.id" :value="cat.name" class="bg-[#13111C] text-white">
+              {{ cat.name }}
+            </option>
           </select>
+          <div v-if="existingCategories.length === 0" class="mt-2 text-sm text-red-400">
+            Bạn chưa tạo danh mục Kỹ năng nào. Vui lòng vào tab "Danh mục Kỹ năng" để tạo trước.
+          </div>
         </div>
         
         <div class="form-group mb-5">

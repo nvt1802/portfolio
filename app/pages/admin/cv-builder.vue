@@ -56,12 +56,7 @@ const skills = useCollection(computed(() => {
   return query(collection(db, 'skills'), orderBy('order', 'asc'))
 }))
 
-const categoriesMap: Record<string, string> = {
-  'frontend': 'Frontend',
-  'backend': 'Backend',
-  'tools': 'Tools/DevOps',
-  'ai-automation': 'AI Agent & Automation'
-}
+
 
 const tabs = [
   { id: 'personal', name: 'Thông tin cá nhân' },
@@ -281,7 +276,7 @@ const saveCvProfile = async () => {
                     <span v-else class="text-[color:var(--primary)] text-[10px] uppercase font-bold">{{ skill.name.charAt(0) }}</span>
                   </div>
                   <span class="font-medium">{{ skill.name }}</span>
-                  <span class="text-gray-500 text-[10px] bg-white/5 px-1.5 py-0.5 rounded ml-auto border border-white/5">{{ categoriesMap[skill.category] }}</span>
+                  <span class="text-gray-500 text-[10px] bg-white/5 px-1.5 py-0.5 rounded ml-auto border border-white/5">{{ skill.category }}</span>
                 </label>
               </div>
             </div>

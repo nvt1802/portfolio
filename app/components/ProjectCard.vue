@@ -65,7 +65,7 @@ defineProps<{
         </svg>
         {{ project.companyName }}
       </div>
-      <p class="text-[color:var(--text-secondary)] text-[14px] mb-5 leading-relaxed line-clamp-3">{{ project.description }}</p>
+      <div class="text-[color:var(--text-secondary)] text-[14px] mb-5 leading-relaxed line-clamp-3 [&>ul]:list-disc [&>ul]:pl-5 [&>ul>li]:mb-1 [&>ol]:list-decimal [&>ol]:pl-5 [&>p]:mb-2 last:[&>p]:mb-0" v-html="project.description"></div>
       
       <div class="flex flex-wrap gap-1.5 mt-auto mb-5">
         <span 
